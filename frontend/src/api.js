@@ -1,115 +1,76 @@
 /**
- * API client for the LLM Council backend.
+ * API client for the Medical QA Benchmark backend.
  */
 
 const API_BASE = 'http://localhost:8001';
 
 export const api = {
-  /**
-   * List all conversations.
-   */
-  async listConversations() {
-    const response = await fetch(`${API_BASE}/api/conversations`);
-    if (!response.ok) {
-      throw new Error('Failed to list conversations');
-    }
-    return response.json();
+  // Models
+  async getModels() {
+    const res = await fetch(`${API_BASE}/api/models`);
+    if (!res.ok) throw new Error('Failed to fetch models');
+    return res.json();
   },
 
-  /**
-   * Create a new conversation.
-   */
-  async createConversation() {
-    const response = await fetch(`${API_BASE}/api/conversations`, {
+  // Experiments
+  async runBenchmark(config) {
+    const res = await fetch(`${API_BASE}/api/benchmark/run`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({}),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
     });
-    if (!response.ok) {
-      throw new Error('Failed to create conversation');
-    }
-    return response.json();
+    if (!res.ok) throw new Error('Failed to start benchmark');
+    return res.json();
   },
 
-  /**
-   * Get a specific conversation.
-   */
-  async getConversation(conversationId) {
-    const response = await fetch(
-      `${API_BASE}/api/conversations/${conversationId}`
-    );
-    if (!response.ok) {
-      throw new Error('Failed to get conversation');
-    }
-    return response.json();
+  async getExperiments() {
+    const res = await fetch(`${API_BASE}/api/experiments`);
+    if (!res.ok) throw new Error('Failed to fetch experiments');
+    return res.json();
   },
 
-  /**
-   * Send a message in a conversation.
-   */
-  async sendMessage(conversationId, content) {
-    const response = await fetch(
-      `${API_BASE}/api/conversations/${conversationId}/message`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error('Failed to send message');
-    }
-    return response.json();
+  async getExperiment(id) {
+    const res = await fetch(`${API_BASE}/api/experiments/${id}`);
+    if (!res.ok) throw new Error('Failed to fetch experiment');
+    return res.json();
   },
 
-  /**
-   * Send a message and receive streaming updates.
-   * @param {string} conversationId - The conversation ID
-   * @param {string} content - The message content
-   * @param {function} onEvent - Callback function for each event: (eventType, data) => void
-   * @returns {Promise<void>}
-   */
-  async sendMessageStream(conversationId, content, onEvent) {
-    const response = await fetch(
-      `${API_BASE}/api/conversations/${conversationId}/message/stream`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content }),
-      }
+  async getResults(id) {
+    const res = await fetch(`${API_BASE}/api/experiments/${id}/results`);
+    if (!res.ok) throw new Error('Failed to fetch results');
+    return res.json();
+  },
+
+  // Prompts
+  async getPrompts() {
+    const res = await fetch(`${API_BASE}/api/prompts`);
+    if (!res.ok) throw new Error('Failed to fetch prompts');
+    return res.json();
+  },
+
+  async savePrompt(data) {
+    const res = await fetch(`${API_BASE}/api/prompts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Failed to save prompt');
+    return res.json();
+  },
+
+  // Baselines
+  async getBaselines() {
+    const res = await fetch(`${API_BASE}/api/baselines`);
+    if (!res.ok) throw new Error('Failed to fetch baselines');
+    return res.json();
+  },
+
+  async runAllBaselines(dataset, nSamples) {
+    const res = await fetch(
+      `${API_BASE}/api/baselines/run?dataset=${dataset}&n_samples=${nSamples}`,
+      { method: 'POST' }
     );
-
-    if (!response.ok) {
-      throw new Error('Failed to send message');
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      const chunk = decoder.decode(value);
-      const lines = chunk.split('\n');
-
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6);
-          try {
-            const event = JSON.parse(data);
-            onEvent(event.type, event);
-          } catch (e) {
-            console.error('Failed to parse SSE event:', e);
-          }
-        }
-      }
-    }
+    if (!res.ok) throw new Error('Failed to start baselines');
+    return res.json();
   },
 };

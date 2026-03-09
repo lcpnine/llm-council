@@ -1,0 +1,400 @@
+/* Dashboard Layout */
+.dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.dash-header {
+  padding: 24px 0 0;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin: 0 -24px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.dash-header h1 {
+  font-size: 22px;
+  margin: 0 0 16px;
+  color: #333;
+}
+
+.dash-tabs {
+  display: flex;
+  gap: 0;
+}
+
+.dash-tabs button {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.dash-tabs button:hover {
+  color: #333;
+  background: #f5f5f5;
+}
+
+.dash-tabs button.active {
+  color: #4a90e2;
+  border-bottom-color: #4a90e2;
+}
+
+.dash-content {
+  padding: 24px 0;
+}
+
+.dash-section h2 {
+  font-size: 18px;
+  margin: 0 0 16px;
+  color: #333;
+}
+
+.dash-section h3 {
+  font-size: 15px;
+  margin: 24px 0 12px;
+  color: #444;
+}
+
+/* Form */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-grid label,
+.prompt-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-grid select,
+.form-grid input,
+.prompt-form input,
+.prompt-form select {
+  padding: 8px 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+}
+
+.prompt-form textarea {
+  padding: 8px 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: monospace;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.prompt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 800px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.btn-primary {
+  padding: 10px 24px;
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #357abd;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 10px 24px;
+  background: #fff;
+  color: #4a90e2;
+  border: 1px solid #4a90e2;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #f0f7ff;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-small {
+  padding: 4px 12px;
+  background: #f0f7ff;
+  color: #4a90e2;
+  border: 1px solid #d0e7ff;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-small:hover {
+  background: #d0e7ff;
+}
+
+.btn-back {
+  padding: 6px 14px;
+  background: none;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.btn-back:hover {
+  background: #f5f5f5;
+}
+
+.run-message {
+  padding: 10px 14px;
+  background: #f0f7ff;
+  border: 1px solid #d0e7ff;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.muted {
+  color: #999;
+  font-size: 14px;
+}
+
+/* Tables */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.data-table th {
+  background: #f8f8f8;
+  font-weight: 600;
+  color: #555;
+  position: sticky;
+  top: 0;
+}
+
+.sortable-th {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable-th:hover {
+  background: #f0f0f0;
+}
+
+.data-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.mono {
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.row-running {
+  background: #fffde7 !important;
+}
+
+.row-wrong {
+  background: #fff5f5;
+}
+
+/* Status badges */
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-running {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-failed {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Detail view */
+.detail-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+  padding: 16px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.metric-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #4a90e2;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Confusion matrix */
+.confusion-matrix {
+  max-width: 400px;
+}
+
+.confusion-matrix td,
+.confusion-matrix th {
+  text-align: center;
+  width: 60px;
+}
+
+.cm-diag {
+  background: #e8f5e9;
+  font-weight: 700;
+}
+
+/* Debate log */
+.debate-log-row td {
+  padding: 0 !important;
+}
+
+.debate-log {
+  padding: 16px;
+  background: #f9f9f9;
+}
+
+.log-section {
+  margin-bottom: 12px;
+}
+
+.log-section h5 {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.log-section pre {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.log-error pre {
+  border-color: #f8d7da;
+  background: #fff5f5;
+}
+
+/* Prompt view */
+.prompt-view {
+  margin: 16px 0;
+}
+
+.prompt-block {
+  margin-bottom: 12px;
+}
+
+.prompt-block h4 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.prompt-block pre {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
