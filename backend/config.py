@@ -5,22 +5,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# OpenRouter API key
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+# Groq API key
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-# OpenRouter API endpoint
-OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
+# Groq API endpoint (OpenAI-compatible)
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 # Default model for benchmarks
-DEFAULT_MODEL = "meta-llama/llama-3.1-70b-instruct"
+DEFAULT_MODEL = "llama-3.1-70b-versatile"
 
-# Available models for benchmark runs
+# Available models for benchmark runs (Groq-hosted)
 AVAILABLE_MODELS = [
-    "meta-llama/llama-3.1-70b-instruct",
-    "openai/gpt-5.1",
-    "google/gemini-3-pro-preview",
-    "anthropic/claude-sonnet-4.5",
-    "x-ai/grok-4",
+    "llama-3.1-70b-versatile",
+    "llama-3.1-8b-instant",
+    "mixtral-8x7b-32768",
+    "gemma2-9b-it",
 ]
 
 # Data directory

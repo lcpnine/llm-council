@@ -26,6 +26,7 @@
 .dash-tabs {
   display: flex;
   gap: 0;
+  flex-wrap: wrap;
 }
 
 .dash-tabs button {
@@ -175,6 +176,16 @@
   background: #d0e7ff;
 }
 
+.btn-small.btn-danger {
+  background: #fff5f5;
+  color: #e24a4a;
+  border-color: #f8d7da;
+}
+
+.btn-small.btn-danger:hover {
+  background: #f8d7da;
+}
+
 .btn-back {
   padding: 6px 14px;
   background: none;
@@ -254,6 +265,21 @@
   background: #fff5f5;
 }
 
+.row-diff {
+  background: #fffde7;
+}
+
+.cell-correct {
+  color: #155724;
+  font-weight: 600;
+}
+
+.cell-wrong {
+  color: #721c24;
+  font-weight: 600;
+  background: #fff5f5;
+}
+
 /* Status badges */
 .status-badge {
   padding: 2px 8px;
@@ -276,6 +302,58 @@
 .status-failed {
   background: #f8d7da;
   color: #721c24;
+}
+
+.status-queued {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+/* Tag pills */
+.tag-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 1px 2px;
+  border-radius: 12px;
+  font-size: 11px;
+  background: #e8eaf6;
+  color: #3f51b5;
+  border: 1px solid #c5cae9;
+  cursor: pointer;
+}
+
+.tag-pill.tag-active {
+  background: #3f51b5;
+  color: #fff;
+}
+
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.filter-bar select {
+  padding: 6px 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #fff;
+}
+
+/* Compare bar */
+.compare-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 13px;
 }
 
 /* Detail view */
@@ -397,4 +475,48 @@
   font-size: 13px;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+/* Batch mode */
+.batch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.batch-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.batch-section h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+.batch-check {
+  display: block;
+  padding: 2px 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.batch-check input {
+  margin-right: 6px;
+}
+
+/* Chart containers */
+.chart-container {
+  margin-bottom: 32px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.chart-container h3 {
+  margin-top: 0;
 }

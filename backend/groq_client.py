@@ -1,8 +1,8 @@
-"""OpenRouter API client for making LLM requests."""
+"""Groq API client for making LLM requests."""
 
 import httpx
 from typing import List, Dict, Any, Optional
-from .config import OPENROUTER_API_KEY, OPENROUTER_API_URL
+from .config import GROQ_API_KEY, GROQ_API_URL
 
 
 async def query_model(
@@ -11,13 +11,14 @@ async def query_model(
     timeout: float = 120.0
 ) -> Optional[Dict[str, Any]]:
     """
-    Query a single model via OpenRouter API.
+    Query a single model via Groq API (OpenAI-compatible format).
 
     Returns:
-        Response dict with 'content' and optional 'reasoning_details', or None if failed
+        Response dict with 'content', optional 'reasoning_details',
+        and 'token_usage', or None if failed
     """
     headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json",
     }
 
@@ -29,7 +30,7 @@ async def query_model(
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.post(
-                OPENROUTER_API_URL,
+                GROQ_API_URL,
                 headers=headers,
                 json=payload
             )
@@ -38,9 +39,18 @@ async def query_model(
             data = response.json()
             message = data['choices'][0]['message']
 
+            # Extract token usage from Groq response
+            usage = data.get('usage', {})
+            token_usage = {
+                'prompt_tokens': usage.get('prompt_tokens', 0),
+                'completion_tokens': usage.get('completion_tokens', 0),
+                'total_tokens': usage.get('total_tokens', 0),
+            }
+
             return {
                 'content': message.get('content'),
-                'reasoning_details': message.get('reasoning_details')
+                'reasoning_details': message.get('reasoning_details'),
+                'token_usage': token_usage,
             }
 
     except Exception as e:
