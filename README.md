@@ -1,32 +1,55 @@
-# LLM Council
+# Multi-Agent Debate for Ambiguous Biomedical QA
 
-![llmcouncil](header.jpg)
+**AI6127 Deep Neural Networks for NLP — Final Project**
 
-The idea of this repo is that instead of asking a question to your favorite LLM provider (e.g. OpenAI GPT 5.1, Google Gemini 3.0 Pro, Anthropic Claude Sonnet 4.5, xAI Grok 4, eg.c), you can group them into your "LLM Council". This repo is a simple, local web app that essentially looks like ChatGPT except it uses OpenRouter to send your query to multiple LLMs, it then asks them to review and rank each other's work, and finally a Chairman LLM produces the final response.
+## Project Goal
 
-In a bit more detail, here is what happens when you submit a query:
+This project investigates whether **multi-agent debate improves LLM performance on ambiguous medical question answering**, especially on "maybe" cases where evidence is insufficient for a definitive yes/no answer.
 
-1. **Stage 1: First opinions**. The user query is given to all LLMs individually, and the responses are collected. The individual responses are shown in a "tab view", so that the user can inspect them all one by one.
-2. **Stage 2: Review**. Each individual LLM is given the responses of the other LLMs. Under the hood, the LLM identities are anonymized so that the LLM can't play favorites when judging their outputs. The LLM is asked to rank them in accuracy and insight.
-3. **Stage 3: Final response**. The designated Chairman of the LLM Council takes all of the model's responses and compiles them into a single final answer that is presented to the user.
+The core research question: *Can a Generator-Skeptic-Judge debate pipeline produce more calibrated, evidence-aware answers than a single LLM pass on biomedical QA benchmarks?*
 
-## Vibe Code Alert
+## How It Works
 
-This project was 99% vibe coded as a fun Saturday hack because I wanted to explore and evaluate a number of LLMs side by side in the process of [reading books together with LLMs](https://x.com/karpathy/status/1990577951671509438). It's nice and useful to see multiple responses side by side, and also the cross-opinions of all LLMs on each other's outputs. I'm not going to support it in any way, it's provided here as is for other people's inspiration and I don't intend to improve it. Code is ephemeral now and libraries are over, ask your LLM to change it in whatever way you like.
+The system implements a 3-stage debate pipeline:
+
+1. **Generator** — An LLM reads the medical context and question, then produces an initial answer with reasoning.
+2. **Skeptic** — A second LLM pass critically reviews the generator's answer, checking for overconfidence, unsupported claims, statistical issues, and logical gaps.
+3. **Judge** — A final LLM pass weighs the original answer against the critique and produces the final answer, penalizing overconfidence when evidence is weak.
+
+This is compared against single-agent baselines (zero-shot, chain-of-thought) to measure whether the debate stages improve accuracy and calibration.
+
+## Datasets
+
+| Dataset | Task | Labels | Source |
+|---------|------|--------|--------|
+| **PubMedQA** | Evidence-based medical QA | yes / no / maybe | `qiaojin/PubMedQA` (HuggingFace) |
+| **MedQA** | Medical licensing exam MCQ | A / B / C / D | `bigbio/med_qa` (HuggingFace) |
+| **MMLU (Medical)** | Clinical knowledge, genetics, anatomy, professional medicine | A / B / C / D | `cais/mmlu` (HuggingFace) |
+
+## Evaluation Metrics
+
+- **Accuracy** — overall correctness
+- **Macro F1** — class-balanced performance
+- **Maybe Recall** (PubMedQA) — ability to correctly identify ambiguous cases
+- **Per-class Precision/Recall/F1** — breakdown by answer type
+- **Confusion Matrix** — error pattern analysis
+- **Token Usage** — cost-effectiveness of multi-agent vs single-agent
 
 ## Setup
 
+### Prerequisites
+
+- Python 3.10+
+- [uv](https://docs.astral.sh/uv/) (Python package manager)
+- Node.js 18+ and npm
+
 ### 1. Install Dependencies
 
-The project uses [uv](https://docs.astral.sh/uv/) for project management.
-
-**Backend:**
 ```bash
+# Backend
 uv sync
-```
 
-**Frontend:**
-```bash
+# Frontend
 cd frontend
 npm install
 cd ..
@@ -37,24 +60,22 @@ cd ..
 Create a `.env` file in the project root:
 
 ```bash
-OPENROUTER_API_KEY=sk-or-v1-...
+GROQ_API_KEY=gsk_...
 ```
 
-Get your API key at [openrouter.ai](https://openrouter.ai/). Make sure to purchase the credits you need, or sign up for automatic top up.
+Get a free API key at [console.groq.com](https://console.groq.com/).
 
 ### 3. Configure Models (Optional)
 
-Edit `backend/config.py` to customize the council:
+Edit `backend/config.py` to change available models:
 
 ```python
-COUNCIL_MODELS = [
-    "openai/gpt-5.1",
-    "google/gemini-3-pro-preview",
-    "anthropic/claude-sonnet-4.5",
-    "x-ai/grok-4",
+AVAILABLE_MODELS = [
+    "llama-3.1-70b-versatile",
+    "llama-3.1-8b-instant",
+    "mixtral-8x7b-32768",
+    "gemma2-9b-it",
 ]
-
-CHAIRMAN_MODEL = "google/gemini-3-pro-preview"
 ```
 
 ## Running the Application
@@ -79,9 +100,63 @@ npm run dev
 
 Then open http://localhost:5173 in your browser.
 
+## Using the Dashboard
+
+### Run Experiment
+Select a model, prompt version, dataset, sample count, and number of stages (1 = single-agent, 3 = full debate). Click "Run Experiment" to start. Use **Batch Mode** to run a matrix of experiments (models x prompts x datasets x stages) in one click.
+
+### Results
+View all experiment results in a sortable, filterable table. Filter by model, prompt version, dataset, stages, status, or tags. Select multiple experiments and click "Compare Selected" to open the comparison view.
+
+### Compare
+Side-by-side metrics comparison across experiments. Shows per-question disagreements (where one experiment got it right and another didn't). Export comparison as a LaTeX table for your paper.
+
+### Charts
+Visualize results with bar charts for accuracy, per-class F1, and token usage. Each chart can be exported as PNG for paper figures.
+
+### Detail View
+Drill into any experiment to see per-class metrics, confusion matrix, and per-question results with full debate logs (generator/skeptic/judge outputs). Add notes and tags to organize experiments by research phase.
+
+### Prompts
+View built-in prompt versions or create custom ones. Available versions:
+- `v1_baseline` — Direct answer, no reasoning
+- `v1_cot` — Chain-of-thought reasoning
+- `v2_structured` — Evidence-based structured analysis
+- `v3_skeptic_strict` — Adversarial skeptic with strict critique checklist
+
+## Project Structure
+
+```
+backend/
+  config.py              # Groq API config and model list
+  groq_client.py         # Groq API client with token tracking
+  main.py                # FastAPI endpoints
+  benchmark/
+    runner.py            # Generator-Skeptic-Judge pipeline
+    datasets.py          # PubMedQA, MedQA, MMLU loaders
+    evaluator.py         # Answer extraction and metrics
+    prompts.py           # Versioned prompt templates
+    baselines.py         # Baseline experiment configs
+  experiments/
+    tracker.py           # SQLite experiment storage
+
+frontend/
+  src/
+    api.js               # Backend API client
+    components/
+      Dashboard.jsx      # Tab shell
+      RunTab.jsx         # Experiment launcher + batch mode
+      ResultsTab.jsx     # Filterable results table
+      DetailTab.jsx      # Single experiment detail view
+      CompareTab.jsx     # Side-by-side comparison + LaTeX export
+      ChartsTab.jsx      # Accuracy, F1, token charts (recharts)
+      PromptsTab.jsx     # Prompt viewer/editor
+```
+
 ## Tech Stack
 
-- **Backend:** FastAPI (Python 3.10+), async httpx, OpenRouter API
-- **Frontend:** React + Vite, react-markdown for rendering
-- **Storage:** JSON files in `data/conversations/`
-- **Package Management:** uv for Python, npm for JavaScript
+- **Backend:** FastAPI, Python 3.10+, async httpx, Groq API
+- **Frontend:** React 19 + Vite, recharts for visualization
+- **Storage:** SQLite (experiments + results)
+- **LLM Provider:** Groq (free tier, OpenAI-compatible API)
+- **Package Management:** uv (Python), npm (JavaScript)
