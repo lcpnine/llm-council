@@ -60,7 +60,7 @@ class CompareRequest(BaseModel):
 
 
 def _make_experiment_id(dataset: str, prompt_version: str) -> str:
-    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S_%f")
     return f"{dataset}_{prompt_version}_{ts}"
 
 
