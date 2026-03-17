@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"git worktree add ../llm-council-docs project-docs 2>/dev/null || (git branch -D project-docs 2>/dev/null; git worktree add ../llm-council-docs project-docs)\",\"description\":\"Create worktree...",
+  "error": "Exit code 128\nfatal: invalid reference: project-docs",
+  "timestamp": "2026-03-17T16:25:32.081Z",
+  "retry_count": 1
+}

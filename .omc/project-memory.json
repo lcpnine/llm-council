@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1773000236368,
+  "lastScanned": 1773764339592,
   "projectRoot": "/Users/lcpnine/llm-council",
   "techStack": {
     "languages": [
@@ -50,21 +50,29 @@
     "backend": {
       "path": "backend",
       "purpose": null,
-      "fileCount": 6,
-      "lastAccessed": 1773000236350,
+      "fileCount": 4,
+      "lastAccessed": 1773764339572,
       "keyFiles": [
         "__init__.py",
         "config.py",
-        "council.py",
         "main.py",
         "openrouter.py"
+      ]
+    },
+    "data": {
+      "path": "data",
+      "purpose": "Data files",
+      "fileCount": 1,
+      "lastAccessed": 1773764339572,
+      "keyFiles": [
+        "experiments.db"
       ]
     },
     "frontend": {
       "path": "frontend",
       "purpose": null,
       "fileCount": 7,
-      "lastAccessed": 1773000236351,
+      "lastAccessed": 1773764339573,
       "keyFiles": [
         "README.md",
         "eslint.config.js",
@@ -73,280 +81,33 @@
         "package.json"
       ]
     },
+    "frontend/dist": {
+      "path": "frontend/dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 2,
+      "lastAccessed": 1773764339575,
+      "keyFiles": [
+        "index.html",
+        "vite.svg"
+      ]
+    },
+    "frontend/node_modules": {
+      "path": "frontend/node_modules",
+      "purpose": "Dependencies",
+      "fileCount": 1,
+      "lastAccessed": 1773764339577,
+      "keyFiles": []
+    },
     "frontend/public": {
       "path": "frontend/public",
       "purpose": "Public files",
       "fileCount": 1,
-      "lastAccessed": 1773000236351,
+      "lastAccessed": 1773764339578,
       "keyFiles": [
         "vite.svg"
       ]
-    },
-    "frontend/src": {
-      "path": "frontend/src",
-      "purpose": "Source code",
-      "fileCount": 5,
-      "lastAccessed": 1773000236352,
-      "keyFiles": [
-        "App.css",
-        "App.jsx",
-        "api.js"
-      ]
     }
   },
-  "hotPaths": [
-    {
-      "path": "backend/config.py",
-      "accessCount": 3,
-      "lastAccessed": 1773000468835,
-      "type": "file"
-    },
-    {
-      "path": "backend/openrouter.py",
-      "accessCount": 3,
-      "lastAccessed": 1773000469007,
-      "type": "file"
-    },
-    {
-      "path": "backend/main.py",
-      "accessCount": 3,
-      "lastAccessed": 1773000628441,
-      "type": "file"
-    },
-    {
-      "path": "pyproject.toml",
-      "accessCount": 3,
-      "lastAccessed": 1773000635263,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/api.js",
-      "accessCount": 3,
-      "lastAccessed": 1773000645022,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/App.jsx",
-      "accessCount": 3,
-      "lastAccessed": 1773000645775,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/App.css",
-      "accessCount": 3,
-      "lastAccessed": 1773000647550,
-      "type": "file"
-    },
-    {
-      "path": "frontend/index.html",
-      "accessCount": 3,
-      "lastAccessed": 1773000649111,
-      "type": "file"
-    },
-    {
-      "path": "backend/council.py",
-      "accessCount": 2,
-      "lastAccessed": 1773000413510,
-      "type": "file"
-    },
-    {
-      "path": "backend/storage.py",
-      "accessCount": 2,
-      "lastAccessed": 1773000413952,
-      "type": "file"
-    },
-    {
-      "path": "backend/__init__.py",
-      "accessCount": 2,
-      "lastAccessed": 1773000414442,
-      "type": "file"
-    },
-    {
-      "path": "start.sh",
-      "accessCount": 2,
-      "lastAccessed": 1773000415419,
-      "type": "file"
-    },
-    {
-      "path": "main.py",
-      "accessCount": 2,
-      "lastAccessed": 1773000415751,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/index.css",
-      "accessCount": 2,
-      "lastAccessed": 1773000420656,
-      "type": "file"
-    },
-    {
-      "path": "frontend/package.json",
-      "accessCount": 2,
-      "lastAccessed": 1773000421386,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/ChatInterface.jsx",
-      "accessCount": 2,
-      "lastAccessed": 1773000428155,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/ChatInterface.css",
-      "accessCount": 2,
-      "lastAccessed": 1773000428626,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/Sidebar.jsx",
-      "accessCount": 2,
-      "lastAccessed": 1773000429050,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/Sidebar.css",
-      "accessCount": 2,
-      "lastAccessed": 1773000429501,
-      "type": "file"
-    },
-    {
-      "path": "README.md",
-      "accessCount": 1,
-      "lastAccessed": 1773000358825,
-      "type": "file"
-    },
-    {
-      "path": "CLAUDE.md",
-      "accessCount": 1,
-      "lastAccessed": 1773000358943,
-      "type": "file"
-    },
-    {
-      "path": ".python-version",
-      "accessCount": 1,
-      "lastAccessed": 1773000359183,
-      "type": "file"
-    },
-    {
-      "path": "frontend/vite.config.js",
-      "accessCount": 1,
-      "lastAccessed": 1773000365819,
-      "type": "file"
-    },
-    {
-      "path": "frontend/eslint.config.js",
-      "accessCount": 1,
-      "lastAccessed": 1773000366005,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/main.jsx",
-      "accessCount": 1,
-      "lastAccessed": 1773000366830,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/Stage1.jsx",
-      "accessCount": 1,
-      "lastAccessed": 1773000370343,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/Stage1.css",
-      "accessCount": 1,
-      "lastAccessed": 1773000370445,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/Stage2.jsx",
-      "accessCount": 1,
-      "lastAccessed": 1773000370467,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/Stage2.css",
-      "accessCount": 1,
-      "lastAccessed": 1773000370670,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/Stage3.jsx",
-      "accessCount": 1,
-      "lastAccessed": 1773000370954,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/Stage3.css",
-      "accessCount": 1,
-      "lastAccessed": 1773000371044,
-      "type": "file"
-    },
-    {
-      "path": "frontend/README.md",
-      "accessCount": 1,
-      "lastAccessed": 1773000371246,
-      "type": "file"
-    },
-    {
-      "path": "backend/benchmark/__init__.py",
-      "accessCount": 1,
-      "lastAccessed": 1773000469200,
-      "type": "file"
-    },
-    {
-      "path": "backend/experiments/__init__.py",
-      "accessCount": 1,
-      "lastAccessed": 1773000469369,
-      "type": "file"
-    },
-    {
-      "path": "backend/benchmark/datasets.py",
-      "accessCount": 1,
-      "lastAccessed": 1773000490205,
-      "type": "file"
-    },
-    {
-      "path": "backend/benchmark/prompts.py",
-      "accessCount": 1,
-      "lastAccessed": 1773000561880,
-      "type": "file"
-    },
-    {
-      "path": "backend/benchmark/evaluator.py",
-      "accessCount": 1,
-      "lastAccessed": 1773000577801,
-      "type": "file"
-    },
-    {
-      "path": "backend/benchmark/runner.py",
-      "accessCount": 1,
-      "lastAccessed": 1773000588351,
-      "type": "file"
-    },
-    {
-      "path": "backend/benchmark/baselines.py",
-      "accessCount": 1,
-      "lastAccessed": 1773000591910,
-      "type": "file"
-    },
-    {
-      "path": "backend/experiments/tracker.py",
-      "accessCount": 1,
-      "lastAccessed": 1773000613243,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/Dashboard.jsx",
-      "accessCount": 1,
-      "lastAccessed": 1773000731403,
-      "type": "file"
-    },
-    {
-      "path": "frontend/src/components/Dashboard.css",
-      "accessCount": 1,
-      "lastAccessed": 1773000741551,
-      "type": "file"
-    }
-  ],
+  "hotPaths": [],
   "userDirectives": []
 }
