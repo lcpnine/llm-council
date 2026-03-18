@@ -41,18 +41,17 @@ def _load_pubmedqa(n_samples: int, seed: int) -> List[Question]:
 
 
 def _load_medqa(n_samples: int, seed: int) -> List[Question]:
-    ds = hf_load_dataset("bigbio/med_qa", "med_qa_en_source", split="test")
+    ds = hf_load_dataset("GBaker/MedQA-USMLE-4-options", split="test")
     ds = ds.shuffle(seed=seed).select(range(min(n_samples, len(ds))))
 
     questions = []
     for idx, row in enumerate(ds):
-        options = row.get("options", [])
+        options = row.get("options", {})
         options_text = "\n".join(
-            f"{opt['key']}) {opt['value']}" for opt in options
+            f"{key}) {value}" for key, value in sorted(options.items())
         )
         prompt = f"{row['question']}\n\n{options_text}"
 
-        # answer_idx is the key letter itself (e.g. "A")
         answer_idx = row.get("answer_idx", "")
 
         questions.append(Question(
