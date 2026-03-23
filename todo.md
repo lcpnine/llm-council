@@ -37,9 +37,9 @@
   - Calibration analysis (especially for "maybe" on PubMedQA)
   - Error analysis / qualitative case studies
 
-### 3. Different Models per Debate Role (Unassigned)
+### 3. Different Models per Debate Role (Swarangi)
 
-> Amruta: "I am able to select 3 stage debate but not able to select 3 different models to act as generator, skeptic and judge. So currently, is the same model acting as all 3?"
+> Swarangi volunteered to implement per-role model selection. (Amruta: "I am able to select 3 stage debate but not able to select 3 different models to act as generator, skeptic and judge. So currently, is the same model acting as all 3?")
 
 - Currently the same model plays all 3 roles (Generator, Skeptic, Judge)
 - Could allow assigning different models to each role for richer experiments
@@ -52,7 +52,9 @@
 - Run remaining model x prompt x dataset combinations if needed
 - Groq rate limits should be tested before large batches
 
-### 5. Paper / Report Writing (Unassigned)
+### 5. Paper / Report Writing (Deferred — Ananya on deck)
+
+> Ananya offered to draft an initial report. Per team discussion (3/23): we'll tackle this after experiments stabilize. If other tasks need help in the meantime, feel free to reach out to Ananya too.
 
 - Introduction, Related Work, Method, Experiments, Results, Conclusion
 - LaTeX table export already exists in CompareTab (frontend)
