@@ -140,7 +140,6 @@ def mark_experiment_running(experiment_id: str, config: Dict) -> None:
     _ensure_db()
     conn = sqlite3.connect(DB_PATH)
     try:
-        from datetime import datetime
         conn.execute(
             """INSERT OR REPLACE INTO experiments
                (id, timestamp, model, prompt_version, dataset, n_samples, n_stages,
@@ -326,12 +325,15 @@ def compare_experiments(experiment_ids: List[str]) -> Dict:
 def export_experiments(experiment_ids: Optional[List[str]] = None) -> Dict:
     """Export experiments with per-question results as a portable JSON structure.
 
+    Always uses get_experiment() (not get_all_experiments()) so that the config
+    field is included in the export — get_all_experiments() omits it.
+
     If experiment_ids is None, exports all experiments.
     """
-    if experiment_ids:
-        experiments = [e for eid in experiment_ids if (e := get_experiment(eid)) is not None]
-    else:
-        experiments = get_all_experiments()
+    if experiment_ids is None:
+        experiment_ids = [e["id"] for e in get_all_experiments()]
+
+    experiments = [e for eid in experiment_ids if (e := get_experiment(eid)) is not None]
 
     for exp in experiments:
         exp["results"] = get_results(exp["id"])
