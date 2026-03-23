@@ -64,6 +64,7 @@ def _migrate_db():
             "notes": "ALTER TABLE experiments ADD COLUMN notes TEXT DEFAULT ''",
             "tags": "ALTER TABLE experiments ADD COLUMN tags TEXT DEFAULT '[]'",
             "progress": "ALTER TABLE experiments ADD COLUMN progress TEXT",
+            "config": "ALTER TABLE experiments ADD COLUMN config TEXT",
         }
         for col, sql in migrations.items():
             if col not in cols:
@@ -340,7 +341,7 @@ def export_experiments(experiment_ids: Optional[List[str]] = None) -> Dict:
 
     return {
         "version": "1",
-        "exported_at": datetime.utcnow().isoformat(),
+        "exported_at": datetime.now(datetime.UTC).isoformat(),
         "count": len(experiments),
         "experiments": experiments,
     }
@@ -359,6 +360,8 @@ def import_experiments(data: Dict, skip_existing: bool = True) -> Dict:
         {"imported": int, "skipped": int, "total": int}
     """
     _ensure_db()
+    if data.get("version") != "1":
+        raise ValueError("Unsupported or missing export version")
     experiments = data.get("experiments", [])
     imported = 0
     skipped = 0
