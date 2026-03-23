@@ -12,9 +12,6 @@ wheels/
 # Keys and secrets
 .env
 
-# Data files
-data/
-
 # Frontend
 frontend/node_modules/
 frontend/dist/
