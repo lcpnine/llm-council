@@ -59,6 +59,11 @@ class CompareRequest(BaseModel):
     experiment_ids: List[str]
 
 
+class ImportRequest(BaseModel):
+    data: dict
+    skip_existing: bool = True
+
+
 def _make_experiment_id(dataset: str, prompt_version: str) -> str:
     ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S_%f")
     return f"{dataset}_{prompt_version}_{ts}"
@@ -164,6 +169,24 @@ async def run_batch(request: BatchRequest, background_tasks: BackgroundTasks):
 @app.get("/api/experiments")
 async def list_experiments():
     return tracker.get_all_experiments()
+
+
+@app.get("/api/experiments/export")
+async def export_experiments(ids: Optional[str] = None):
+    """Export experiments as JSON. Use ?ids=id1,id2 to export specific ones."""
+    experiment_ids = [i.strip() for i in ids.split(",")] if ids else None
+    return tracker.export_experiments(experiment_ids)
+
+
+@app.post("/api/experiments/import")
+async def import_experiments(request: ImportRequest):
+    """Import experiments from an export payload.
+
+    Set skip_existing=false to force-overwrite existing experiments (will
+    replace notes/tags with the imported values).
+    """
+    result = tracker.import_experiments(request.data, skip_existing=request.skip_existing)
+    return result
 
 
 @app.get("/api/experiments/{experiment_id}")

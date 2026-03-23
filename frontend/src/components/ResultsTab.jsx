@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { api } from '../api';
 
 const PRESET_TAGS = ['Phase 1', 'Phase 2', 'Final', 'Ablation', 'Debug'];
@@ -6,6 +6,8 @@ const PRESET_TAGS = ['Phase 1', 'Phase 2', 'Final', 'Ablation', 'Debug'];
 export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSelectForCompare }) {
   const [sortField, setSortField] = useState('timestamp');
   const [sortDir, setSortDir] = useState('desc');
+  const [importStatus, setImportStatus] = useState(null);
+  const importInputRef = useRef(null);
 
   // Filters
   const [filterModel, setFilterModel] = useState('');
@@ -61,9 +63,83 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const exportIds = compareIds.length > 0 ? compareIds : null;
+      const data = await api.exportExperiments(exportIds);
+      const label = exportIds ? `${exportIds.length}_selected` : 'all';
+      const ts = new Date().toISOString().slice(0, 10);
+      const filename = `experiments_${label}_${ts}.json`;
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(`Export failed: ${err.message}`);
+    }
+  };
+
+  const handleImportFile = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    e.target.value = '';
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      setImportStatus('importing');
+      const result = await api.importExperiments(data, true);
+      setImportStatus(`Imported ${result.imported}, skipped ${result.skipped} (already existed)`);
+      onRefresh();
+      setTimeout(() => setImportStatus(null), 5000);
+    } catch (err) {
+      setImportStatus(`Import failed: ${err.message}`);
+      setTimeout(() => setImportStatus(null), 5000);
+    }
+  };
+
   return (
     <section className="dash-section">
-      <h2>Experiment Results</h2>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <h2 style={{ margin: 0 }}>Experiment Results</h2>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <button
+            className="btn-secondary"
+            onClick={handleExport}
+            title={compareIds.length > 0 ? `Export ${compareIds.length} selected experiments` : 'Export all experiments'}
+          >
+            Export JSON{compareIds.length > 0 ? ` (${compareIds.length})` : ' (all)'}
+          </button>
+          <button
+            className="btn-secondary"
+            onClick={() => importInputRef.current?.click()}
+            title="Import experiments from a JSON file"
+          >
+            Import JSON
+          </button>
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".json"
+            style={{ display: 'none' }}
+            onChange={handleImportFile}
+          />
+        </div>
+      </div>
+      {importStatus && (
+        <div style={{
+          padding: '6px 12px',
+          marginBottom: 8,
+          borderRadius: 4,
+          background: importStatus.startsWith('Import failed') ? '#fdecea' : '#e8f5e9',
+          color: importStatus.startsWith('Import failed') ? '#c62828' : '#2e7d32',
+          fontSize: 13,
+        }}>
+          {importStatus === 'importing' ? 'Importing...' : importStatus}
+        </div>
+      )}
 
       {/* Filters */}
       <div className="filter-bar">
