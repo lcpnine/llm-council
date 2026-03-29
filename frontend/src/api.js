@@ -95,6 +95,23 @@ export const api = {
     return res.json();
   },
 
+  async exportExperiments(ids = null) {
+    const query = ids && ids.length > 0 ? `?ids=${ids.join(',')}` : '';
+    const res = await fetch(`${API_BASE}/api/experiments/export${query}`);
+    if (!res.ok) throw new Error('Failed to export experiments');
+    return res.json();
+  },
+
+  async importExperiments(data, skipExisting = true) {
+    const res = await fetch(`${API_BASE}/api/experiments/import`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data, skip_existing: skipExisting }),
+    });
+    if (!res.ok) throw new Error('Failed to import experiments');
+    return res.json();
+  },
+
   // Prompts
   async getPrompts() {
     const res = await fetch(`${API_BASE}/api/prompts`);

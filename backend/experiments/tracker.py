@@ -3,6 +3,7 @@
 import sqlite3
 import json
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional
 
@@ -63,6 +64,7 @@ def _migrate_db():
             "notes": "ALTER TABLE experiments ADD COLUMN notes TEXT DEFAULT ''",
             "tags": "ALTER TABLE experiments ADD COLUMN tags TEXT DEFAULT '[]'",
             "progress": "ALTER TABLE experiments ADD COLUMN progress TEXT",
+            "config": "ALTER TABLE experiments ADD COLUMN config TEXT",
         }
         for col, sql in migrations.items():
             if col not in cols:
@@ -139,7 +141,6 @@ def mark_experiment_running(experiment_id: str, config: Dict) -> None:
     _ensure_db()
     conn = sqlite3.connect(DB_PATH)
     try:
-        from datetime import datetime
         conn.execute(
             """INSERT OR REPLACE INTO experiments
                (id, timestamp, model, prompt_version, dataset, n_samples, n_stages,
@@ -320,3 +321,116 @@ def compare_experiments(experiment_ids: List[str]) -> Dict:
             exp["results"] = get_results(eid)
             experiments.append(exp)
     return {"experiments": experiments}
+
+
+def export_experiments(experiment_ids: Optional[List[str]] = None) -> Dict:
+    """Export experiments with per-question results as a portable JSON structure.
+
+    Always uses get_experiment() (not get_all_experiments()) so that the config
+    field is included in the export — get_all_experiments() omits it.
+
+    If experiment_ids is None, exports all experiments.
+    """
+    if experiment_ids is None:
+        experiment_ids = [e["id"] for e in get_all_experiments()]
+
+    experiments = [e for eid in experiment_ids if (e := get_experiment(eid)) is not None]
+
+    for exp in experiments:
+        exp["results"] = get_results(exp["id"])
+
+    return {
+        "version": "1",
+        "exported_at": datetime.now(datetime.UTC).isoformat(),
+        "count": len(experiments),
+        "experiments": experiments,
+    }
+
+
+def import_experiments(data: Dict, skip_existing: bool = True) -> Dict:
+    """Import experiments from an export dict into the local DB.
+
+    Args:
+        data: Dict produced by export_experiments().
+        skip_existing: When True (default), experiments whose ID already exists
+            in the DB are left untouched — preserving local notes and tags.
+            Set to False to force-overwrite with the imported data.
+
+    Returns:
+        {"imported": int, "skipped": int, "total": int}
+    """
+    _ensure_db()
+    if data.get("version") != "1":
+        raise ValueError("Unsupported or missing export version")
+    experiments = data.get("experiments", [])
+    imported = 0
+    skipped = 0
+
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        existing_ids = {
+            row[0]
+            for row in conn.execute("SELECT id FROM experiments").fetchall()
+        }
+
+        for exp in experiments:
+            eid = exp.get("id")
+            if not eid:
+                continue
+
+            if skip_existing and eid in existing_ids:
+                skipped += 1
+                continue
+
+            metrics = exp.get("full_metrics") or exp.get("metrics") or {}
+
+            conn.execute(
+                """INSERT OR REPLACE INTO experiments
+                   (id, timestamp, model, prompt_version, dataset, n_samples, n_stages,
+                    status, accuracy, f1_macro, maybe_recall, full_metrics, config,
+                    total_tokens, notes, tags)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    eid,
+                    exp.get("timestamp", ""),
+                    exp.get("model", ""),
+                    exp.get("prompt_version", ""),
+                    exp.get("dataset", ""),
+                    exp.get("n_samples", 0),
+                    exp.get("n_stages", 3),
+                    exp.get("status", "completed"),
+                    exp.get("accuracy"),
+                    exp.get("f1_macro"),
+                    exp.get("maybe_recall"),
+                    json.dumps(metrics),
+                    json.dumps(exp.get("config", {})),
+                    exp.get("total_tokens", 0),
+                    exp.get("notes", ""),
+                    json.dumps(exp.get("tags", [])),
+                ),
+            )
+
+            conn.execute("DELETE FROM results WHERE experiment_id = ?", (eid,))
+            for r in exp.get("results", []):
+                conn.execute(
+                    """INSERT INTO results
+                       (experiment_id, question_id, predicted, gold, correct, debate_log, token_usage)
+                       VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        eid,
+                        r.get("question_id", ""),
+                        r.get("predicted", ""),
+                        r.get("gold", ""),
+                        r.get("correct", 0),
+                        json.dumps(r.get("debate_log", {})),
+                        json.dumps(r.get("token_usage", {})),
+                    ),
+                )
+
+            imported += 1
+
+        conn.commit()
+    finally:
+        conn.close()
+
+    return {"imported": imported, "skipped": skipped, "total": len(experiments)}
