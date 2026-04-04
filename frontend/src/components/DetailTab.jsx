@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '../api';
 
 const PRESET_TAGS = ['Phase 1', 'Phase 2', 'Final', 'Ablation', 'Debug'];
@@ -153,23 +153,25 @@ export default function DetailTab({ experiment, results, onBack, onRefresh }) {
         </thead>
         <tbody>
           {results.map((r, i) => (
-            <tr key={i} className={r.correct ? '' : 'row-wrong'}>
-              <td className="mono">{r.question_id}</td>
-              <td className="mono">{r.gold}</td>
-              <td className="mono">{r.predicted}</td>
-              <td>{r.correct ? '\u2713' : '\u2717'}</td>
-              <td>
-                <button className="btn-small"
-                  onClick={() => setExpandedRow(expandedRow === i ? null : i)}>
-                  {expandedRow === i ? 'Hide' : 'Show'}
-                </button>
-              </td>
-            </tr>
-          ))}
-          {results.map((r, i) => expandedRow === i && (
-            <tr key={`${i}-log`} className="debate-log-row">
-              <td colSpan={5}><DebateLog log={r.debate_log} /></td>
-            </tr>
+            <React.Fragment key={i}>
+              <tr className={r.correct ? '' : 'row-wrong'}>
+                <td className="mono">{r.question_id}</td>
+                <td className="mono">{r.gold}</td>
+                <td className="mono">{r.predicted}</td>
+                <td>{r.correct ? '\u2713' : '\u2717'}</td>
+                <td>
+                  <button className="btn-small"
+                    onClick={() => setExpandedRow(expandedRow === i ? null : i)}>
+                    {expandedRow === i ? 'Hide' : 'Show'}
+                  </button>
+                </td>
+              </tr>
+              {expandedRow === i && (
+                <tr className="debate-log-row">
+                  <td colSpan={5}><DebateLog log={r.debate_log} /></td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>

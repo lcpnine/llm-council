@@ -12,9 +12,6 @@ wheels/
 # Keys and secrets
 .env
 
-# Data files
-data/
-
 # Frontend
 frontend/node_modules/
 frontend/dist/
@@ -26,3 +23,8 @@ frontend/.vite/
 # Tool artifacts
 .omc/
 .claude/
+
+# Experiment database — each team member keeps a local copy.
+# Share results by exporting to data/exports/*.json and committing that instead.
+data/experiments.db
+data/custom_prompts.json
