@@ -1,0 +1,12 @@
+# Ignore large data files
+results/analysis_results/results_filtered_highquality.csv
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore temporary files
+*.tmp
+*.bak
+*~
