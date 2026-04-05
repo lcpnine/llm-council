@@ -26,7 +26,7 @@ from collections import defaultdict, Counter
 # Get script directory and project paths
 SCRIPT_DIR = Path(__file__).parent.resolve()
 PROJECT_DIR = SCRIPT_DIR.parent
-RESULTS_DIR = PROJECT_DIR / "results" / "analysis_results"
+RESULTS_DIR = PROJECT_DIR / "results"
 OUTPUT_DIR = RESULTS_DIR / "agent_attribution"
 
 # Configuration

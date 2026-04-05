@@ -6,7 +6,7 @@ import pandas as pd
 from pathlib import Path
 
 # Read the CSV
-results_dir = Path(__file__).parent.parent / 'results' / 'analysis_results'
+results_dir = Path(__file__).parent.parent / 'results'
 csv_path = results_dir / 'EXPERIMENTS_SUMMARY_TABLE.csv'
 df = pd.read_csv(csv_path)
 

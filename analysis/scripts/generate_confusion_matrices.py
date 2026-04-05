@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 
 # Read data
-results_dir = Path(__file__).parent.parent / 'results' / 'analysis_results'
+results_dir = Path(__file__).parent.parent / 'results'
 db_exp = pd.read_csv(results_dir / 'db_experiments.csv')
 
 # Parse full_metrics to get confusion matrices

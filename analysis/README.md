@@ -36,7 +36,7 @@ We evaluated a multi-agent debate system (Generator → Skeptic → Judge) acros
 │   ├── improved_evaluator.py                   # Answer extraction logic
 │   └── qualitative_analysis.py                 # Error pattern analysis
 │
-└── results/analysis_results/      # All analysis outputs
+└── results/results/      # All analysis outputs
     ├── EXPERIMENTS_SUMMARY_TABLE.csv             # Main results table
     ├── db_experiments.csv                      # Experiment metadata
     ├── results_filtered_highquality.csv        # Raw data (2,000 predictions, 5.7 MB)
@@ -105,7 +105,7 @@ We evaluated a multi-agent debate system (Generator → Skeptic → Judge) acros
 
 ##  Visualizations
 
-All figures available in `analysis_results/`:
+All figures available in `results/`:
 
 1. **Figure 6.1** (`overall_accuracy_filtered.png`) - Overall accuracy by dataset
 2. **Figure 6.2** (`task_difficulty_class_accuracy_filtered.png`) - Per-class breakdown
@@ -136,11 +136,11 @@ python scripts/analysis.py
 ```
 
 ### Input Data
-- Raw results: `analysis_results/db_results.csv` (7.8MB)
-- Experiment metadata: `analysis_results/db_experiments.csv` (25KB)
+- Raw results: `results/db_results.csv` (7.8MB)
+- Experiment metadata: `results/db_experiments.csv` (25KB)
 
 ### Output
-All analysis outputs saved to `analysis_results/`:
+All analysis outputs saved to `results/`:
 - CSV files (data tables)
 - PNG files (visualizations)
 - TXT files (summaries)
