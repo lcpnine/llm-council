@@ -3,10 +3,14 @@ import { api } from '../api';
 
 const DATASETS = ['pubmedqa', 'medqa', 'mmlu'];
 
+
 export default function RunTab({ models, promptVersions, baselines, onRefresh }) {
   const versionKeys = Object.keys(promptVersions);
 
   const [runModel, setRunModel] = useState(models[0] || '');
+  const [runGeneratorModel, setRunGeneratorModel] = useState(models[0] || '');
+  const [runSkepticModel, setRunSkepticModel] = useState(models[0] || '');
+  const [runJudgeModel, setRunJudgeModel] = useState(models[0] || '');
   const [runPrompt, setRunPrompt] = useState(versionKeys[0] || '');
   const [runDataset, setRunDataset] = useState('pubmedqa');
   const [runSamples, setRunSamples] = useState(100);
@@ -25,13 +29,25 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
     setRunLoading(true);
     setRunMessage('');
     try {
-      const res = await api.runBenchmark({
-        model: runModel,
-        prompt_version: runPrompt,
-        dataset: runDataset,
-        n_samples: runSamples,
-        n_stages: runStages,
-      });
+      const config = runStages === 3
+        ? {
+            model: runGeneratorModel,
+            generator_model: runGeneratorModel,
+            skeptic_model: runSkepticModel,
+            judge_model: runJudgeModel,
+            prompt_version: runPrompt,
+            dataset: runDataset,
+            n_samples: runSamples,
+            n_stages: runStages,
+          }
+        : {
+            model: runModel,
+            prompt_version: runPrompt,
+            dataset: runDataset,
+            n_samples: runSamples,
+            n_stages: runStages,
+          };
+      const res = await api.runBenchmark(config);
       setRunMessage(`Started: ${res.experiment_id}`);
       onRefresh();
     } catch (err) {
@@ -103,12 +119,35 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
       {!batchMode ? (
         <>
           <div className="form-grid">
-            <label>
-              Model
-              <select value={runModel} onChange={e => setRunModel(e.target.value)}>
-                {models.map(m => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </label>
+            {runStages === 3 ? (
+              <>
+                <label>
+                  Generator Model
+                  <select value={runGeneratorModel} onChange={e => setRunGeneratorModel(e.target.value)}>
+                    {models.map(m => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </label>
+                <label>
+                  Skeptic Model
+                  <select value={runSkepticModel} onChange={e => setRunSkepticModel(e.target.value)}>
+                    {models.map(m => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </label>
+                <label>
+                  Judge Model
+                  <select value={runJudgeModel} onChange={e => setRunJudgeModel(e.target.value)}>
+                    {models.map(m => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </label>
+              </>
+            ) : (
+              <label>
+                Model
+                <select value={runModel} onChange={e => setRunModel(e.target.value)}>
+                  {models.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+              </label>
+            )}
             <label>
               Prompt Version
               <select value={runPrompt} onChange={e => setRunPrompt(e.target.value)}>

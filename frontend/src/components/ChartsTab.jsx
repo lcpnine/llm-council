@@ -40,26 +40,67 @@ export default function ChartsTab({ experiments }) {
     tokens: e.total_tokens || 0,
   }));
 
-  const exportChart = (chartRef, filename) => {
-    const svg = chartRef.current?.querySelector('svg');
+  const exportChart = async (chartRef, filename) => {
+    const container = chartRef.current;
+    if (!container) return;
+
+    // Recharts legends can include small icon SVGs; always target the chart surface.
+    let svg = container.querySelector('svg.recharts-surface');
+    if (!svg) {
+      const svgs = Array.from(container.querySelectorAll('svg'));
+      svg = svgs.sort((a, b) => {
+        const ar = a.getBoundingClientRect();
+        const br = b.getBoundingClientRect();
+        return (br.width * br.height) - (ar.width * ar.height);
+      })[0] || null;
+    }
     if (!svg) return;
-    const svgData = new XMLSerializer().serializeToString(svg);
+
+    const rect = svg.getBoundingClientRect();
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
+
+    const cloned = svg.cloneNode(true);
+    cloned.setAttribute('width', String(width));
+    cloned.setAttribute('height', String(height));
+    cloned.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+    const svgData = new XMLSerializer().serializeToString(cloned);
+    const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    const scale = 2;
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    ctx.scale(scale, scale);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, width, height);
+
     const img = new Image();
     img.onload = () => {
-      canvas.width = img.width * 2;
-      canvas.height = img.height * 2;
-      ctx.scale(2, 2);
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, width, height);
+      URL.revokeObjectURL(url);
+
       const a = document.createElement('a');
       a.download = filename;
       a.href = canvas.toDataURL('image/png');
       a.click();
     };
-    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      // Keep failure silent in UI but visible in dev tools.
+      console.error('Failed to export chart PNG');
+    };
+
+    img.src = url;
   };
 
   const accRef = useRef(null);
@@ -83,7 +124,7 @@ export default function ChartsTab({ experiments }) {
       <div className="chart-container" ref={accRef}>
         <h3>
           Accuracy by Experiment
-          <button className="btn-small" style={{ marginLeft: 12 }}
+          <button type="button" className="btn-small" style={{ marginLeft: 12 }}
             onClick={() => exportChart(accRef, 'accuracy.png')}>Export PNG</button>
         </h3>
         <ResponsiveContainer width="100%" height={350}>
@@ -104,7 +145,7 @@ export default function ChartsTab({ experiments }) {
         <div className="chart-container" ref={f1Ref}>
           <h3>
             Per-Class F1 Score
-            <button className="btn-small" style={{ marginLeft: 12 }}
+            <button type="button" className="btn-small" style={{ marginLeft: 12 }}
               onClick={() => exportChart(f1Ref, 'per_class_f1.png')}>Export PNG</button>
           </h3>
           <ResponsiveContainer width="100%" height={350}>
@@ -127,7 +168,7 @@ export default function ChartsTab({ experiments }) {
       <div className="chart-container" ref={tokenRef}>
         <h3>
           Token Usage by Experiment
-          <button className="btn-small" style={{ marginLeft: 12 }}
+          <button type="button" className="btn-small" style={{ marginLeft: 12 }}
             onClick={() => exportChart(tokenRef, 'token_usage.png')}>Export PNG</button>
         </h3>
         <ResponsiveContainer width="100%" height={300}>

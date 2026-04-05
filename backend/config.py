@@ -1,9 +1,11 @@
 """Configuration for the Medical QA Benchmark."""
 
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+# Resolve .env relative to project root, regardless of working directory
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 # Groq API key
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
