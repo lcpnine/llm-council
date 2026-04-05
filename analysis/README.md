@@ -4,13 +4,6 @@ This folder contains comprehensive evaluation analysis of the multi-agent advers
 
 **Part of:** [LLM Council Project](../README.md)
 
-**COMPLETE ANALYSIS DOCUMENTATION:** [ANALYSIS_GUIDE.md](ANALYSIS_GUIDE.md)
-- Explains every table, column, figure, and metric
-- How agent attribution works
-- How difficulty bucketing works
-- All key findings with interpretations
-- How to use for your paper
-
 ---
 
 ##  Overview
