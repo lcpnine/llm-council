@@ -9,7 +9,7 @@ from ..groq_client import query_model
 from .datasets import load_dataset, Question
 from .prompts import get_prompt
 from .evaluator import extract_answer, compute_metrics
-
+from .pubmedbert_classifier import predict as pubmedbert_predict
 
 def _add_tokens(accumulator: Dict, usage: Dict):
     """Add token usage from a single call into an accumulator."""
@@ -32,8 +32,33 @@ class BenchmarkRunner:
         self.config = config
         self.progress_callback = progress_callback
 
+    def _extract_options(self, question: Question) -> list:
+        """Extract the 4 option strings from a MedQA/MMLU question text."""
+        lines = question.question_text.strip().split("\n")
+        options = []
+        for line in lines:
+            line = line.strip()
+            if line.startswith(("A)", "B)", "C)", "D)")):
+                options.append(line[2:].strip())
+        return options if len(options) == 4 else ["", "", "", ""]
+
     async def _run_question(self, question: Question) -> Dict:
         """Run the debate pipeline on a single question."""
+
+        # ── PubMedBERT: bypass pipeline entirely ──────────────────────────────
+        if self.model == "pubmedbert":
+            options = self._extract_options(question) if question.dataset != "pubmedqa" else None
+            predicted = pubmedbert_predict(question.question_text, question.dataset, options)
+            return {
+                "question_id": question.id,
+                "predicted": predicted,
+                "gold": question.gold_answer,
+                "correct": int(predicted == question.gold_answer),
+                "debate_log": {"note": "PubMedBERT classifier — no debate pipeline"},
+                "token_usage": {},
+            }
+        # ── end PubMedBERT ────────────────────────────────────────────────────
+
         debate_log = {}
         token_usage = {"generator": {}, "skeptic": {}, "judge": {}}
 

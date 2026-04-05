@@ -20,7 +20,11 @@ AVAILABLE_MODELS = [
     "llama-3.1-8b-instant",
     "qwen/qwen3-32b",
     "meta-llama/llama-4-scout-17b-16e-instruct",
+    "pubmedbert",
 ]
 
 # Data directory
 DATA_DIR = "data"
+
+# Path to fine-tuned local models
+MODELS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models")

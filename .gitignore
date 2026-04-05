@@ -24,6 +24,9 @@ frontend/.vite/
 .omc/
 .claude/
 
+# Fine-tuned Models
+models/
+
 # Experiment database — each team member keeps a local copy.
 # Share results by exporting to data/exports/*.json and committing that instead.
 data/experiments.db

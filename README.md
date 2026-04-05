@@ -78,6 +78,24 @@ AVAILABLE_MODELS = [
 ]
 ```
 
+### 4. Download Fine-Tuned Models
+
+The PubMedBERT models are not included in the repository. Download them from Drive: 
+https://drive.google.com/drive/folders/1GwEJSKZO4HUfSbc4Zb5JFdkz1B5WQh4j?usp=drive_link
+
+- [pubmedbert-pubmedqa]
+- [pubmedbert-medqa] 
+- [pubmedbert-mmlu]  
+
+Unzip each file and place the folders under `models/` at the project root:
+```
+llm-council/
+└── models/
+    ├── pubmedbert-pubmedqa/
+    ├── pubmedbert-medqa/
+    └── pubmedbert-mmlu/
+```
+
 ## Running the Application
 
 **Option 1: Use the start script**
@@ -123,6 +141,13 @@ View built-in prompt versions or create custom ones. Available versions:
 - `v1_cot` — Chain-of-thought reasoning
 - `v2_structured` — Evidence-based structured analysis
 - `v3_skeptic_strict` — Adversarial skeptic with strict critique checklist
+
+### PubMedBERT Baseline
+
+Select `pubmedbert` from the model dropdown to run the fine-tuned classifier baseline.
+Prompt Version and Stages are disabled for this model — it runs as a single-stage classifier with no debate pipeline. Select the dataset as normal.
+
+
 
 ## Project Structure
 

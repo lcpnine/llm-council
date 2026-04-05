@@ -5,7 +5,6 @@ const DATASETS = ['pubmedqa', 'medqa', 'mmlu'];
 
 export default function RunTab({ models, promptVersions, baselines, onRefresh }) {
   const versionKeys = Object.keys(promptVersions);
-
   const [runModel, setRunModel] = useState(models[0] || '');
   const [runPrompt, setRunPrompt] = useState(versionKeys[0] || '');
   const [runDataset, setRunDataset] = useState('pubmedqa');
@@ -13,7 +12,7 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
   const [runStages, setRunStages] = useState(3);
   const [runLoading, setRunLoading] = useState(false);
   const [runMessage, setRunMessage] = useState('');
-
+  const isPubMedBERT = runModel === "pubmedbert";
   // Batch mode
   const [batchMode, setBatchMode] = useState(false);
   const [batchModels, setBatchModels] = useState([]);
@@ -27,10 +26,10 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
     try {
       const res = await api.runBenchmark({
         model: runModel,
-        prompt_version: runPrompt,
+        prompt_version: isPubMedBERT ? "none" : runPrompt,
         dataset: runDataset,
         n_samples: runSamples,
-        n_stages: runStages,
+        n_stages: isPubMedBERT ? 1 : runStages,
       });
       setRunMessage(`Started: ${res.experiment_id}`);
       onRefresh();
@@ -111,9 +110,10 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
             </label>
             <label>
               Prompt Version
-              <select value={runPrompt} onChange={e => setRunPrompt(e.target.value)}>
+              <select value={runPrompt} onChange={e => setRunPrompt(e.target.value)} disabled={isPubMedBERT}>
                 {versionKeys.map(v => <option key={v} value={v}>{v}</option>)}
               </select>
+              {isPubMedBERT && <small style={{ color: '#888' }}>Not applicable for PubMedBERT</small>}
             </label>
             <label>
               Dataset
@@ -128,10 +128,11 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
             </label>
             <label>
               Stages
-              <select value={runStages} onChange={e => setRunStages(Number(e.target.value))}>
+              <select value={isPubMedBERT ? 1 : runStages} onChange={e => setRunStages(Number(e.target.value))} disabled={isPubMedBERT}>
                 <option value={1}>1 (Generator only)</option>
                 <option value={3}>3 (Full debate)</option>
               </select>
+              {isPubMedBERT && <small style={{ color: '#888' }}>Always 1 for PubMedBERT</small>}
             </label>
           </div>
           <div className="form-actions">
