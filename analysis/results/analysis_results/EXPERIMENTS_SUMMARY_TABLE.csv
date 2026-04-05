@@ -1,25 +1,25 @@
-Dataset,Setup,Prompt Version,Generator Model,Skeptic Model,Judge Model,Accuracy,Unknown Rate,Samples,Hard %,Medium %,Easy %,Both Correct,Fixed by Debate,Broke by Debate,Both Wrong,Net Impact
-MEDQA,1-stage (Baseline),v1_baseline,llama-3.1-8b-instant,-,-,50.0%,2.0%,100,26.0%,31.0%,43.0%,-,-,-,-,-
-MEDQA,1-stage (Baseline),v1_baseline,llama-3.3-70b-versatile,-,-,78.0%,0.0%,100,26.0%,31.0%,43.0%,-,-,-,-,-
-MEDQA,1-stage (Baseline),v1_cot,llama-3.3-70b-versatile,-,-,79.0%,4.0%,100,26.0%,31.0%,43.0%,-,-,-,-,-
-MEDQA,3-stage (Debate),v2_structured,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,77.0%,8.0%,100,26.0%,31.0%,43.0%,25.0,51.0,1.0,23.0,+50 (HELPED)
-MEDQA,3-stage (Debate),v3_skeptic_strict,llama-3.1-8b-instant,llama-3.1-8b-instant,llama-3.1-8b-instant,11.0%,77.0%,100,N/A,N/A,N/A,,,,,N/A (poor data quality)
-MEDQA,3-stage (Debate),v3_skeptic_strict,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,50.0%,45.0%,100,N/A,N/A,N/A,,,,,N/A (poor data quality)
-MMLU,1-stage (Baseline),v1_baseline,llama-3.1-8b-instant,-,-,81.0%,0.0%,100,7.0%,22.0%,71.0%,-,-,-,-,-
-MMLU,1-stage (Baseline),v1_baseline,llama-3.3-70b-versatile,-,-,88.0%,0.0%,100,7.0%,22.0%,71.0%,-,-,-,-,-
-MMLU,1-stage (Baseline),v1_cot,llama-3.3-70b-versatile,-,-,90.0%,1.0%,100,7.0%,22.0%,71.0%,-,-,-,-,-
-MMLU,3-stage (Debate),v2_structured,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,94.0%,0.0%,100,7.0%,22.0%,71.0%,47.0,47.0,0.0,6.0,+47 (HELPED)
-MMLU,3-stage (Debate),v3_skeptic_strict,llama-3.1-8b-instant,llama-3.1-8b-instant,llama-3.1-8b-instant,13.0%,77.0%,100,N/A,N/A,N/A,,,,,N/A (poor data quality)
-MMLU,3-stage (Debate),v3_skeptic_strict,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,64.0%,34.0%,100,N/A,N/A,N/A,,,,,N/A (poor data quality)
-PUBMEDQA,1-stage (Baseline),v1_baseline,meta-llama/llama-4-scout-17b-16e-instruct,-,-,65.0%,0.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
-PUBMEDQA,1-stage (Baseline),v1_baseline,qwen/qwen3-32b,-,-,71.0%,0.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
-PUBMEDQA,1-stage (Baseline),v1_baseline,llama-3.1-8b-instant,-,-,60.0%,7.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
-PUBMEDQA,1-stage (Baseline),v1_baseline,llama-3.3-70b-versatile,-,-,70.0%,10.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
-PUBMEDQA,1-stage (Baseline),v1_cot,llama-3.3-70b-versatile,-,-,71.0%,0.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
-PUBMEDQA,1-stage (Baseline),v2_structured,llama-3.3-70b-versatile,-,-,68.0%,9.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
-PUBMEDQA,3-stage (Debate),v1_baseline,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,70.0%,8.0%,100,31.0%,15.0%,54.0%,66.0,4.0,6.0,24.0,-2 (HURT)
-PUBMEDQA,3-stage (Debate),v2_structured,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,44.0%,0.0%,100,31.0%,15.0%,54.0%,28.0,16.0,30.0,26.0,-14 (HURT)
-PUBMEDQA,3-stage (Debate),v3_skeptic_strict,meta-llama/llama-4-scout-17b-16e-instruct,meta-llama/llama-4-scout-17b-16e-instruct,meta-llama/llama-4-scout-17b-16e-instruct,14.0%,0.0%,100,31.0%,15.0%,54.0%,0.0,10.0,47.0,43.0,-37 (HURT)
-PUBMEDQA,3-stage (Debate),v3_skeptic_strict,qwen/qwen3-32b,qwen/qwen3-32b,qwen/qwen3-32b,31.0%,0.0%,100,31.0%,15.0%,54.0%,3.0,6.0,49.0,42.0,-43 (HURT)
-PUBMEDQA,3-stage (Debate),v3_skeptic_strict,llama-3.1-8b-instant,llama-3.1-8b-instant,llama-3.1-8b-instant,23.0%,4.0%,100,31.0%,15.0%,54.0%,0.0,20.0,7.0,73.0,+13 (HELPED)
-PUBMEDQA,3-stage (Debate),v3_skeptic_strict,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,15.0%,0.0%,100,31.0%,15.0%,54.0%,0.0,15.0,56.0,29.0,-41 (HURT)
+Dataset,Setup,Prompt Version,Generator Model,Skeptic Model,Judge Model,Accuracy,Δ Accuracy,Unknown Rate,Samples,Hard %,Medium %,Easy %,Both Correct,Fixed by Debate,Broke by Debate,Both Wrong,Net Impact
+MEDQA,1-stage (Baseline),v1_baseline,llama-3.1-8b-instant,-,-,50.0%,-,2.0%,100,26.0%,31.0%,43.0%,-,-,-,-,-
+MEDQA,1-stage (Baseline),v1_baseline,llama-3.3-70b-versatile,-,-,78.0%,-,0.0%,100,26.0%,31.0%,43.0%,-,-,-,-,-
+MEDQA,1-stage (Baseline),v1_cot,llama-3.3-70b-versatile,-,-,79.0%,-,4.0%,100,26.0%,31.0%,43.0%,-,-,-,-,-
+MEDQA,3-stage (Debate),v2_structured,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,77.0%,+8.0%,8.0%,100,26.0%,31.0%,43.0%,25.0,51.0,1.0,23.0,+50 (HELPED)
+MEDQA,3-stage (Debate),v3_skeptic_strict,llama-3.1-8b-instant,llama-3.1-8b-instant,llama-3.1-8b-instant,11.0%,-58.0%,77.0%,100,,,,,,,,N/A (poor data quality)
+MEDQA,3-stage (Debate),v3_skeptic_strict,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,50.0%,-19.0%,45.0%,100,,,,,,,,N/A (poor data quality)
+MMLU,1-stage (Baseline),v1_baseline,llama-3.1-8b-instant,-,-,81.0%,-,0.0%,100,7.0%,22.0%,71.0%,-,-,-,-,-
+MMLU,1-stage (Baseline),v1_baseline,llama-3.3-70b-versatile,-,-,88.0%,-,0.0%,100,7.0%,22.0%,71.0%,-,-,-,-,-
+MMLU,1-stage (Baseline),v1_cot,llama-3.3-70b-versatile,-,-,90.0%,-,1.0%,100,7.0%,22.0%,71.0%,-,-,-,-,-
+MMLU,3-stage (Debate),v2_structured,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,94.0%,+7.7%,0.0%,100,7.0%,22.0%,71.0%,47.0,47.0,0.0,6.0,+47 (HELPED)
+MMLU,3-stage (Debate),v3_skeptic_strict,llama-3.1-8b-instant,llama-3.1-8b-instant,llama-3.1-8b-instant,13.0%,-73.3%,77.0%,100,,,,,,,,N/A (poor data quality)
+MMLU,3-stage (Debate),v3_skeptic_strict,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,64.0%,-22.3%,34.0%,100,,,,,,,,N/A (poor data quality)
+PUBMEDQA,1-stage (Baseline),v1_baseline,meta-llama/llama-4-scout-17b-16e-instruct,-,-,65.0%,-,0.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
+PUBMEDQA,1-stage (Baseline),v1_baseline,qwen/qwen3-32b,-,-,71.0%,-,0.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
+PUBMEDQA,1-stage (Baseline),v1_baseline,llama-3.1-8b-instant,-,-,60.0%,-,7.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
+PUBMEDQA,1-stage (Baseline),v1_baseline,llama-3.3-70b-versatile,-,-,70.0%,-,10.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
+PUBMEDQA,1-stage (Baseline),v1_cot,llama-3.3-70b-versatile,-,-,71.0%,-,0.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
+PUBMEDQA,1-stage (Baseline),v2_structured,llama-3.3-70b-versatile,-,-,68.0%,-,9.0%,100,31.0%,15.0%,54.0%,-,-,-,-,-
+PUBMEDQA,3-stage (Debate),v1_baseline,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,70.0%,+2.5%,8.0%,100,31.0%,15.0%,54.0%,66.0,4.0,6.0,24.0,-2 (HURT)
+PUBMEDQA,3-stage (Debate),v2_structured,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,44.0%,-23.5%,0.0%,100,31.0%,15.0%,54.0%,28.0,16.0,30.0,26.0,-14 (HURT)
+PUBMEDQA,3-stage (Debate),v3_skeptic_strict,meta-llama/llama-4-scout-17b-16e-instruct,meta-llama/llama-4-scout-17b-16e-instruct,meta-llama/llama-4-scout-17b-16e-instruct,14.0%,-53.5%,0.0%,100,31.0%,15.0%,54.0%,0.0,10.0,47.0,43.0,-37 (HURT)
+PUBMEDQA,3-stage (Debate),v3_skeptic_strict,qwen/qwen3-32b,qwen/qwen3-32b,qwen/qwen3-32b,31.0%,-36.5%,0.0%,100,31.0%,15.0%,54.0%,3.0,6.0,49.0,42.0,-43 (HURT)
+PUBMEDQA,3-stage (Debate),v3_skeptic_strict,llama-3.1-8b-instant,llama-3.1-8b-instant,llama-3.1-8b-instant,23.0%,-44.5%,4.0%,100,31.0%,15.0%,54.0%,0.0,20.0,7.0,73.0,+13 (HELPED)
+PUBMEDQA,3-stage (Debate),v3_skeptic_strict,llama-3.3-70b-versatile,llama-3.3-70b-versatile,llama-3.3-70b-versatile,15.0%,-52.5%,0.0%,100,31.0%,15.0%,54.0%,0.0,15.0,56.0,29.0,-41 (HURT)

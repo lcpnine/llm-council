@@ -20,6 +20,16 @@
 | MMLU | 86.7% | 94.0% | +7.3% | +47 fixed, -0 broke |
 | PubMedQA | 67.5% | 32.8% | -34.7% | +75 fixed, -277 broke |
 
+**Understanding the Metrics:**
+- **1-Stage (Baseline)**: Average accuracy across multiple 1-stage experiments (e.g., MedQA: average of 50%, 78%, 79% = 69%)
+- **Δ (Change)**: Percentage point improvement from baseline to 3-stage debate (e.g., 69% → 77% = +8.0 pp)
+- **Net Impact**: Agent attribution from specific 3-stage experiments showing:
+  - **Fixed**: Questions where Generator was wrong but Judge corrected it (error correction)
+  - **Broke**: Questions where Generator was right but Judge changed it to wrong (debate-introduced error)
+  - **Net = Fixed - Broke** (e.g., MedQA: 51 fixed - 1 broke = +50 net improvement)
+
+These metrics answer different questions: Δ shows overall system improvement (1-stage vs 3-stage), while Net Impact shows the debate mechanism's correction power (Generator vs Judge within 3-stage).
+
 Debate significantly improves MCQ accuracy but degrades ambiguous 3-class classification.
 
 ### Agent Attribution (800 3-stage predictions)
