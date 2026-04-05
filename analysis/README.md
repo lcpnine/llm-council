@@ -4,50 +4,62 @@ This folder contains comprehensive evaluation analysis of the multi-agent advers
 
 **Part of:** [LLM Council Project](../README.md)
 
+**COMPLETE ANALYSIS DOCUMENTATION:** [ANALYSIS_GUIDE.md](ANALYSIS_GUIDE.md)
+- Explains every table, column, figure, and metric
+- How agent attribution works
+- How difficulty bucketing works
+- All key findings with interpretations
+- How to use for your paper
+
 ---
 
-## 📊 Overview
+##  Overview
 
 We evaluated a multi-agent debate system (Generator → Skeptic → Judge) across three medical QA datasets: PubMedQA, MedQA, and MMLU. Key findings demonstrate **task-dependent effectiveness** of debate for medical reasoning and uncertainty detection.
 
 ### Key Results:
-- ✅ **MCQ datasets (MedQA/MMLU):** +7-12% accuracy improvement
-- ✅ **Uncertainty detection:** +323% maybe recall on PubMedQA
-- ✅ **Difficulty-dependent:** +29% on hard questions, -52% on easy questions
+-  **MCQ datasets (MedQA/MMLU):** +7-12% accuracy improvement
+-  **Uncertainty detection:** +323% maybe recall on PubMedQA
+-  **Difficulty-dependent:** +29% on hard questions, -52% on easy questions
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```
 ├── README.md                       # This file
 ├── requirements.txt                # Python dependencies
 │
-├── docs/                          # 📄 Documentation & paper sections
+├── docs/                          # Documentation & paper sections
 │   ├── SECTION_6.2_RESULTS.md          # Quantitative results (for paper)
 │   ├── SECTION_6.6_LIMITATIONS.md      # Limitations & future work (for paper)
 │   └── EVALUATION_SUMMARY.md           # Technical summary
 │
-├── scripts/                       # 🔧 Analysis scripts (reproducibility)
-│   ├── task_difficulty_analysis_filtered.py    # Main analysis
-│   ├── reanalyze_simple.py                     # Data filtering
-│   ├── check_evaluation_quality.py             # Quality audit
-│   ├── improved_evaluator.py                   # Enhanced extraction
-│   ├── analysis.py                             # Original analysis
-│   └── qualitative_analysis.py                 # Debate log analysis
+├── scripts/                       # Analysis scripts (reproducibility)
+│   ├── task_difficulty_analysis_filtered.py    # Main analysis & figures
+│   ├── agent_attribution_analysis.py           # Agent responsibility analysis
+│   ├── generate_confusion_matrices.py          # Confusion matrix visualization
+│   ├── analysis.py                             # Statistical analysis (t-tests)
+│   ├── improved_evaluator.py                   # Answer extraction logic
+│   └── qualitative_analysis.py                 # Error pattern analysis
 │
-└── analysis_results/              # 📊 High-quality filtered data & visualizations
-    ├── results_filtered_highquality.csv        # Main dataset (2,000 predictions)
+└── results/analysis_results/      # All analysis outputs
+    ├── EXPERIMENTS_SUMMARY_TABLE.csv             # Main results table
+    ├── db_experiments.csv                      # Experiment metadata
+    ├── results_filtered_highquality.csv        # Raw data (2,000 predictions, 5.7 MB)
     ├── overall_accuracy_filtered.png           # Figure 6.1
     ├── task_difficulty_class_accuracy_filtered.png  # Figure 6.2
     ├── task_difficulty_stratified_filtered.png      # Figure 6.3
-    ├── task_difficulty_class_breakdown_filtered.csv # Table data
-    └── task_difficulty_stratified_filtered.csv      # Table data
+    ├── agent_attribution/                      # Agent analysis (8 files)
+    │   ├── attribution_report.txt
+    │   ├── attribution_table.csv
+    │   └── 3 PNG figures
+    └── confusion_matrices/                     # 12 confusion matrices (one per 3-stage exp)
 ```
 
 ---
 
-## 🎯 Key Findings
+##  Key Findings
 
 ### 1. MCQ Datasets - Debate Improves Accuracy
 
@@ -71,15 +83,15 @@ We evaluated a multi-agent debate system (Generator → Skeptic → Judge) acros
 
 | Difficulty | 1-Stage | 3-Stage | Change |
 |------------|---------|---------|--------|
-| Hard (<50%) | 32.7% | 42.3% | **+29.4%** ✅ |
-| Medium (50-80%) | 66.7% | 51.4% | -23.0% ⚠️ |
-| Easy (>80%) | 97.9% | 46.6% | -52.4% ❌ |
+| Hard (<50%) | 32.7% | 42.3% | **+29.4%**  |
+| Medium (50-80%) | 66.7% | 51.4% | -23.0%  |
+| Easy (>80%) | 97.9% | 46.6% | -52.4%  |
 
 **Interpretation:** Debate most effective when reasoning is genuinely difficult. Introduces unnecessary skepticism on clear-cut questions.
 
 ---
 
-## 🔬 Methodology
+## Methodology
 
 ### Data Quality Control
 - **Total experiments:** 27 conducted
@@ -98,7 +110,7 @@ We evaluated a multi-agent debate system (Generator → Skeptic → Judge) acros
 
 ---
 
-## 📊 Visualizations
+##  Visualizations
 
 All figures available in `analysis_results/`:
 
@@ -108,7 +120,7 @@ All figures available in `analysis_results/`:
 
 ---
 
-## 🔧 Reproducibility
+##  Reproducibility
 
 ### Prerequisites
 ```bash
@@ -117,14 +129,17 @@ pip install pandas numpy matplotlib seaborn scipy scikit-learn
 
 ### Run Analysis
 ```bash
-# Main task difficulty analysis (generates all tables & figures)
+# Main task difficulty analysis (generates figures)
 python scripts/task_difficulty_analysis_filtered.py
 
-# Quality audit
-python scripts/check_evaluation_quality.py
+# Agent attribution analysis
+python scripts/agent_attribution_analysis.py
 
-# Data filtering
-python scripts/reanalyze_simple.py
+# Generate confusion matrices
+python scripts/generate_confusion_matrices.py
+
+# Statistical analysis (t-tests, effect sizes)
+python scripts/analysis.py
 ```
 
 ### Input Data
@@ -139,7 +154,7 @@ All analysis outputs saved to `analysis_results/`:
 
 ---
 
-## 📝 Paper Integration
+##  Paper Integration
 
 ### Section 6.2 (Results)
 Use `SECTION_6.2_RESULTS.md` - includes:
@@ -161,7 +176,7 @@ Use `SECTION_6.6_LIMITATIONS.md` - includes:
 
 ---
 
-## 🔍 Key Insights
+## Key Insights
 
 ### Why Debate Works (MCQ):
 1. **Error correction** - Skeptic catches Generator mistakes
@@ -174,15 +189,15 @@ Use `SECTION_6.6_LIMITATIONS.md` - includes:
 3. **Format confusion** - 3-class problem creates ambiguity
 
 ### When to Use Debate:
-✅ Complex diagnostic reasoning (MCQ)
-✅ Uncertainty-aware systems (maybe detection)
-✅ Hard questions where baseline struggles
-❌ High-throughput screening (3.8× cost)
-❌ Clear-cut questions with obvious answers
+ Complex diagnostic reasoning (MCQ)
+ Uncertainty-aware systems (maybe detection)
+ Hard questions where baseline struggles
+ High-throughput screening (3.8× cost)
+ Clear-cut questions with obvious answers
 
 ---
 
-## ⚖️ Limitations
+## ⚖ Limitations
 
 See `SECTION_6.6_LIMITATIONS.md` for comprehensive discussion. Key limitations:
 
