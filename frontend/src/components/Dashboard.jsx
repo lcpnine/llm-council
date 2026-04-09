@@ -108,7 +108,7 @@ export default function Dashboard() {
         )}
         {tab === 'detail' && detailExperiment && (
           <DetailTab experiment={detailExperiment} results={detailResults}
-            onBack={() => setTab('results')} onRefresh={loadData} />
+            onBack={() => { setTab('results'); setDetailExperiment(null); }} onRefresh={loadData} />
         )}
         {tab === 'compare' && (
           <CompareTab experiments={experiments} initialIds={compareIds} />

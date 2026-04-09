@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { api } from '../api';
 
-const PRESET_TAGS = ['Phase 1', 'Phase 2', 'Final', 'Ablation', 'Debug'];
+const PRESET_TAGS = ['phase1', 'phase2', 'phase3', 'phase4', 'phase5', 'phase6',
+  'multi-model', 'ablation', 'baseline', 'final', 'debug'];
 
 export default function DetailTab({ experiment, results, onBack, onRefresh }) {
   const [expandedRow, setExpandedRow] = useState(null);

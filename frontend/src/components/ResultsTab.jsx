@@ -1,7 +1,8 @@
 import { useRef, useState, useMemo } from 'react';
 import { api } from '../api';
 
-const PRESET_TAGS = ['Phase 1', 'Phase 2', 'Final', 'Ablation', 'Debug'];
+const PRESET_TAGS = ['phase1', 'phase2', 'phase3', 'phase4', 'phase5', 'phase6',
+  'multi-model', 'ablation', 'baseline', 'final', 'debug'];
 
 // Strip vendor prefixes to keep model names short in the table cell
 function shortName(model) {
@@ -47,9 +48,36 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
 
   const uniqueVals = (field) => [...new Set(experiments.map(e => e[field]).filter(Boolean))];
 
+  // Collect every unique tag actually used across all experiments
+  const allTagOptions = useMemo(() => {
+    const s = new Set();
+    experiments.forEach(e => (e.tags || []).forEach(t => s.add(t)));
+    return [...s].sort();
+  }, [experiments]);
+
+  // Collect every model name used in any role across all experiments
+  const allModelOptions = useMemo(() => {
+    const s = new Set();
+    experiments.forEach(e => {
+      if (e.model) s.add(e.model);
+      if (e.config?.generator_model) s.add(e.config.generator_model);
+      if (e.config?.skeptic_model)   s.add(e.config.skeptic_model);
+      if (e.config?.judge_model)     s.add(e.config.judge_model);
+    });
+    return [...s].filter(Boolean).sort();
+  }, [experiments]);
+
   const filtered = useMemo(() => {
     return experiments.filter(e => {
-      if (filterModel && e.model !== filterModel) return false;
+      if (filterModel) {
+        const cfg = e.config;
+        const usedInAnyRole =
+          e.model === filterModel ||
+          cfg?.generator_model === filterModel ||
+          cfg?.skeptic_model   === filterModel ||
+          cfg?.judge_model     === filterModel;
+        if (!usedInAnyRole) return false;
+      }
       if (filterPrompt && e.prompt_version !== filterPrompt) return false;
       if (filterDataset && e.dataset !== filterDataset) return false;
       if (filterStages && e.n_stages !== Number(filterStages)) return false;
@@ -165,7 +193,7 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
       <div className="filter-bar">
         <select value={filterModel} onChange={e => setFilterModel(e.target.value)}>
           <option value="">All Models</option>
-          {uniqueVals('model').map(v => <option key={v} value={v}>{v}</option>)}
+          {allModelOptions.map(v => <option key={v} value={v}>{v}</option>)}
         </select>
         <select value={filterPrompt} onChange={e => setFilterPrompt(e.target.value)}>
           <option value="">All Prompts</option>
@@ -188,7 +216,7 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
         </select>
         <select value={filterTag} onChange={e => setFilterTag(e.target.value)}>
           <option value="">All Tags</option>
-          {PRESET_TAGS.map(t => <option key={t} value={t}>{t}</option>)}
+          {allTagOptions.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
       </div>
 
