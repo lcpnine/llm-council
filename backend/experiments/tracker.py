@@ -242,6 +242,7 @@ def get_all_experiments() -> List[Dict]:
                 "f1_macro": r["f1_macro"],
                 "maybe_recall": r["maybe_recall"],
                 "full_metrics": json.loads(r["full_metrics"]) if r["full_metrics"] else None,
+                "config": json.loads(r["config"]) if r["config"] else None,
                 "total_tokens": r["total_tokens"],
                 "notes": r["notes"] or "",
                 "tags": json.loads(r["tags"]) if r["tags"] else [],

@@ -3,6 +3,26 @@ import { api } from '../api';
 
 const PRESET_TAGS = ['Phase 1', 'Phase 2', 'Final', 'Ablation', 'Debug'];
 
+// Strip vendor prefixes to keep model names short in the table cell
+function shortName(model) {
+  if (!model) return '-';
+  return model.replace('meta-llama/', '').replace('qwen/', '');
+}
+
+// Returns multi-model info from config when roles use different models
+function getModelInfo(exp) {
+  const cfg = exp.config;
+  if (exp.n_stages === 3 && cfg) {
+    const g = cfg.generator_model || cfg.model || exp.model;
+    const s = cfg.skeptic_model   || cfg.model || exp.model;
+    const j = cfg.judge_model     || cfg.model || exp.model;
+    if (g !== s || s !== j) {
+      return { isMulti: true, generator: g, skeptic: s, judge: j };
+    }
+  }
+  return { isMulti: false, model: exp.model };
+}
+
 export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSelectForCompare }) {
   const [sortField, setSortField] = useState('timestamp');
   const [sortDir, setSortDir] = useState('desc');
@@ -218,7 +238,21 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
                 </td>
                 <td className="mono" style={{ fontSize: 11, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis' }}
                   title={exp.id}>{exp.id}</td>
-                <td className="mono">{exp.model}</td>
+                <td className="mono">
+                  {(() => {
+                    const m = getModelInfo(exp);
+                    if (m.isMulti) {
+                      return (
+                        <div title={`Generator: ${m.generator}\nSkeptic: ${m.skeptic}\nJudge: ${m.judge}`}>
+                          <div style={{ fontSize: 11 }}><span style={{ color: '#888' }}>G:</span> {shortName(m.generator)}</div>
+                          <div style={{ fontSize: 11 }}><span style={{ color: '#888' }}>S:</span> {shortName(m.skeptic)}</div>
+                          <div style={{ fontSize: 11 }}><span style={{ color: '#888' }}>J:</span> {shortName(m.judge)}</div>
+                        </div>
+                      );
+                    }
+                    return exp.model;
+                  })()}
+                </td>
                 <td className="mono">{exp.prompt_version}</td>
                 <td>{exp.dataset}</td>
                 <td>{exp.n_stages}</td>
