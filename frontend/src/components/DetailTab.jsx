@@ -59,7 +59,15 @@ export default function DetailTab({ experiment, results, onBack, onRefresh }) {
       <h2>Experiment: {experiment.id}</h2>
 
       <div className="detail-meta">
-        <div><strong>Model:</strong> {experiment.model}</div>
+        {experiment.n_stages === 3 && experiment.config?.generator_model ? (
+          <>
+            <div><strong>Generator:</strong> {experiment.config.generator_model}</div>
+            <div><strong>Skeptic:</strong>   {experiment.config.skeptic_model || experiment.model}</div>
+            <div><strong>Judge:</strong>     {experiment.config.judge_model   || experiment.model}</div>
+          </>
+        ) : (
+          <div><strong>Model:</strong> {experiment.model}</div>
+        )}
         <div><strong>Prompt:</strong> {experiment.prompt_version}</div>
         <div><strong>Dataset:</strong> {experiment.dataset}</div>
         <div><strong>Samples:</strong> {experiment.n_samples}</div>
