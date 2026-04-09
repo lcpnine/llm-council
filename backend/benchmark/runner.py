@@ -24,6 +24,9 @@ class BenchmarkRunner:
         Optional: n_stages (1 = generator only, 3 = full pipeline)
         """
         self.model = config["model"]
+        self.generator_model = config.get("generator_model") or config["model"]
+        self.skeptic_model = config.get("skeptic_model") or config["model"]
+        self.judge_model = config.get("judge_model") or config["model"]
         self.prompt_version = config["prompt_version"]
         self.dataset_name = config["dataset"]
         self.n_samples = config.get("n_samples", 100)
@@ -42,7 +45,7 @@ class BenchmarkRunner:
             self.prompt_version, "generator", question=question.question_text
         )
         gen_response = await query_model(
-            self.model, [{"role": "user", "content": generator_prompt}]
+            self.generator_model, [{"role": "user", "content": generator_prompt}]
         )
         generator_output = gen_response["content"] if gen_response else ""
         debate_log["generator_output"] = generator_output
@@ -69,7 +72,7 @@ class BenchmarkRunner:
             question=question.question_text, answer=generator_output
         )
         skeptic_response = await query_model(
-            self.model, [{"role": "user", "content": skeptic_prompt}]
+            self.skeptic_model, [{"role": "user", "content": skeptic_prompt}]
         )
         skeptic_output = skeptic_response["content"] if skeptic_response else ""
         debate_log["skeptic_output"] = skeptic_output
@@ -86,7 +89,7 @@ class BenchmarkRunner:
             critique=skeptic_output
         )
         judge_response = await query_model(
-            self.model, [{"role": "user", "content": judge_prompt}]
+            self.judge_model, [{"role": "user", "content": judge_prompt}]
         )
         judge_output = judge_response["content"] if judge_response else ""
         debate_log["judge_output"] = judge_output

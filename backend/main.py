@@ -30,6 +30,9 @@ _batch_running = False
 
 class BenchmarkRequest(BaseModel):
     model: str
+    generator_model: Optional[str] = None
+    skeptic_model: Optional[str] = None
+    judge_model: Optional[str] = None
     prompt_version: str
     dataset: str
     n_samples: int = 100
@@ -126,6 +129,9 @@ async def run_benchmark(request: BenchmarkRequest, background_tasks: BackgroundT
     config = {
         "experiment_id": experiment_id,
         "model": request.model,
+        "generator_model": request.generator_model,
+        "skeptic_model": request.skeptic_model,
+        "judge_model": request.judge_model,
         "prompt_version": request.prompt_version,
         "dataset": request.dataset,
         "n_samples": request.n_samples,
@@ -151,6 +157,9 @@ async def run_batch(request: BatchRequest, background_tasks: BackgroundTasks):
         config = {
             "experiment_id": experiment_id,
             "model": req.model,
+            "generator_model": req.generator_model,
+            "skeptic_model": req.skeptic_model,
+            "judge_model": req.judge_model,
             "prompt_version": req.prompt_version,
             "dataset": req.dataset,
             "n_samples": req.n_samples,

@@ -28,3 +28,5 @@ frontend/.vite/
 # Share results by exporting to data/exports/*.json and committing that instead.
 data/experiments.db
 data/custom_prompts.json
+
+settings.json
