@@ -3,7 +3,7 @@
 import sqlite3
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Dict, Optional
 
@@ -342,7 +342,7 @@ def export_experiments(experiment_ids: Optional[List[str]] = None) -> Dict:
 
     return {
         "version": "1",
-        "exported_at": datetime.now(datetime.UTC).isoformat(),
+        "exported_at": datetime.now(timezone.utc).isoformat(),        
         "count": len(experiments),
         "experiments": experiments,
     }
