@@ -43,6 +43,51 @@ class BenchmarkRunner:
         debate_log = {}
         token_usage = {"generator": {}, "skeptic": {}, "judge": {}}
 
+        # Angel-Devil: parallel independent execution (v6_angel_devil)
+        if "angel_devil" in self.prompt_version:
+            angel_prompt = get_prompt(self.prompt_version, "angel", question=question.question_text)
+            devil_prompt = get_prompt(self.prompt_version, "devil", question=question.question_text)
+
+            angel_res, devil_res = await asyncio.gather(
+                query_model(self.generator_model, [{"role": "user", "content": angel_prompt}]),
+                query_model(self.skeptic_model, [{"role": "user", "content": devil_prompt}])
+            )
+
+            angel_output = angel_res["content"] if angel_res else ""
+            devil_output = devil_res["content"] if devil_res else ""
+            debate_log["angel_output"] = angel_output
+            debate_log["devil_output"] = devil_output
+            if angel_res and angel_res.get("token_usage"):
+                token_usage["generator"] = angel_res["token_usage"]
+            if devil_res and devil_res.get("token_usage"):
+                token_usage["skeptic"] = devil_res["token_usage"]
+
+            await asyncio.sleep(0.5)
+
+            judge_prompt = get_prompt(
+                self.prompt_version, "judge",
+                question=question.question_text,
+                angel_argument=angel_output,
+                devil_argument=devil_output
+            )
+            judge_response = await query_model(
+                self.judge_model, [{"role": "user", "content": judge_prompt}]
+            )
+            judge_output = judge_response["content"] if judge_response else ""
+            debate_log["judge_output"] = judge_output
+            if judge_response and judge_response.get("token_usage"):
+                token_usage["judge"] = judge_response["token_usage"]
+
+            predicted = extract_answer(judge_output, question.dataset)
+            return {
+                "question_id": question.id,
+                "predicted": predicted,
+                "gold": question.gold_answer,
+                "correct": int(predicted == question.gold_answer),
+                "debate_log": debate_log,
+                "token_usage": token_usage,
+            }
+
         # Stage 1: Generator
         generator_prompt = get_prompt(
             self.prompt_version, "generator", question=question.question_text

@@ -16,6 +16,7 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
   const [runSamples, setRunSamples] = useState(100);
   const [runStages, setRunStages] = useState(3);
   const [runDebateStyle, setRunDebateStyle] = useState('adversarial');
+  const isAngelDevil = runPrompt.includes('angel_devil');
   const [runLoading, setRunLoading] = useState(false);
   const [runMessage, setRunMessage] = useState('');
 
@@ -124,13 +125,13 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
             {runStages === 3 ? (
               <>
                 <label>
-                  Generator Model
+                  {isAngelDevil ? 'Angel Model' : 'Generator Model'}
                   <select value={runGeneratorModel} onChange={e => setRunGeneratorModel(e.target.value)}>
                     {models.map(m => <option key={m} value={m}>{m}</option>)}
                   </select>
                 </label>
                 <label>
-                  Skeptic Model
+                  {isAngelDevil ? 'Devil Model' : 'Skeptic Model'}
                   <select value={runSkepticModel} onChange={e => setRunSkepticModel(e.target.value)}>
                     {models.map(m => <option key={m} value={m}>{m}</option>)}
                   </select>
@@ -174,7 +175,7 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
                 <option value={3}>3 (Full debate)</option>
               </select>
             </label>
-            {runStages === 3 && (
+            {runStages === 3 && !isAngelDevil && (
               <label>
                 Debate Style
                 <select value={runDebateStyle} onChange={e => setRunDebateStyle(e.target.value)}>
