@@ -88,7 +88,7 @@ PROMPT_VERSIONS = {
             "Critique: {critique}"
         ),
     },
-    "v5_devil_advocate": {
+    "v5_counter_argument": {
         "generator": (
             "You are a medical expert. Answer the following question by:\n"
             "1. Identifying the key claims or findings in the context\n"
