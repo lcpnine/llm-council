@@ -32,6 +32,9 @@ class BenchmarkRunner:
         self.n_samples = config.get("n_samples", 100)
         self.experiment_id = config["experiment_id"]
         self.n_stages = config.get("n_stages", 3)
+        # "adversarial": skeptic sees generator's answer (default)
+        # "independent": both experts answer independently, judge arbitrates
+        self.debate_style = config.get("debate_style", "adversarial")
         self.config = config
         self.progress_callback = progress_callback
 
@@ -39,6 +42,51 @@ class BenchmarkRunner:
         """Run the debate pipeline on a single question."""
         debate_log = {}
         token_usage = {"generator": {}, "skeptic": {}, "judge": {}}
+
+        # Angel-Devil: parallel independent execution (v6_angel_devil)
+        if "angel_devil" in self.prompt_version:
+            angel_prompt = get_prompt(self.prompt_version, "angel", question=question.question_text)
+            devil_prompt = get_prompt(self.prompt_version, "devil", question=question.question_text)
+
+            angel_res, devil_res = await asyncio.gather(
+                query_model(self.generator_model, [{"role": "user", "content": angel_prompt}]),
+                query_model(self.skeptic_model, [{"role": "user", "content": devil_prompt}])
+            )
+
+            angel_output = angel_res["content"] if angel_res else ""
+            devil_output = devil_res["content"] if devil_res else ""
+            debate_log["angel_output"] = angel_output
+            debate_log["devil_output"] = devil_output
+            if angel_res and angel_res.get("token_usage"):
+                token_usage["generator"] = angel_res["token_usage"]
+            if devil_res and devil_res.get("token_usage"):
+                token_usage["skeptic"] = devil_res["token_usage"]
+
+            await asyncio.sleep(0.5)
+
+            judge_prompt = get_prompt(
+                self.prompt_version, "judge",
+                question=question.question_text,
+                angel_argument=angel_output,
+                devil_argument=devil_output
+            )
+            judge_response = await query_model(
+                self.judge_model, [{"role": "user", "content": judge_prompt}]
+            )
+            judge_output = judge_response["content"] if judge_response else ""
+            debate_log["judge_output"] = judge_output
+            if judge_response and judge_response.get("token_usage"):
+                token_usage["judge"] = judge_response["token_usage"]
+
+            predicted = extract_answer(judge_output, question.dataset)
+            return {
+                "question_id": question.id,
+                "predicted": predicted,
+                "gold": question.gold_answer,
+                "correct": int(predicted == question.gold_answer),
+                "debate_log": debate_log,
+                "token_usage": token_usage,
+            }
 
         # Stage 1: Generator
         generator_prompt = get_prompt(
@@ -66,22 +114,33 @@ class BenchmarkRunner:
 
         await asyncio.sleep(0.5)  # Rate limit
 
-        # Stage 2: Skeptic
-        skeptic_prompt = get_prompt(
-            self.prompt_version, "skeptic",
-            question=question.question_text, answer=generator_output
-        )
+        # Stage 2: Skeptic (adversarial) OR Expert B (independent)
+        if self.debate_style == "independent":
+            # Expert B answers independently — does NOT receive Expert A's answer
+            skeptic_prompt = get_prompt(
+                self.prompt_version, "skeptic",
+                question=question.question_text
+            )
+            log_key = "expert_b_output"
+        else:
+            # Traditional adversarial: skeptic critiques the generator's answer
+            skeptic_prompt = get_prompt(
+                self.prompt_version, "skeptic",
+                question=question.question_text, answer=generator_output
+            )
+            log_key = "skeptic_output"
+
         skeptic_response = await query_model(
             self.skeptic_model, [{"role": "user", "content": skeptic_prompt}]
         )
         skeptic_output = skeptic_response["content"] if skeptic_response else ""
-        debate_log["skeptic_output"] = skeptic_output
+        debate_log[log_key] = skeptic_output
         if skeptic_response and skeptic_response.get("token_usage"):
             token_usage["skeptic"] = skeptic_response["token_usage"]
 
         await asyncio.sleep(0.5)  # Rate limit
 
-        # Stage 3: Judge
+        # Stage 3: Judge — receives both outputs regardless of debate style
         judge_prompt = get_prompt(
             self.prompt_version, "judge",
             question=question.question_text,

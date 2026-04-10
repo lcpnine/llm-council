@@ -65,6 +65,7 @@ def _migrate_db():
             "tags": "ALTER TABLE experiments ADD COLUMN tags TEXT DEFAULT '[]'",
             "progress": "ALTER TABLE experiments ADD COLUMN progress TEXT",
             "config": "ALTER TABLE experiments ADD COLUMN config TEXT",
+            "debate_style": "ALTER TABLE experiments ADD COLUMN debate_style TEXT DEFAULT 'adversarial'",
         }
         for col, sql in migrations.items():
             if col not in cols:
@@ -89,11 +90,13 @@ def save_experiment(experiment: Dict) -> None:
         token_usage = experiment.get("total_token_usage", {})
         total_tokens = token_usage.get("total_tokens", 0) if token_usage else 0
 
+        config = experiment.get("config", {})
         conn.execute(
             """INSERT OR REPLACE INTO experiments
                (id, timestamp, model, prompt_version, dataset, n_samples, n_stages,
-                status, accuracy, f1_macro, maybe_recall, full_metrics, config, total_tokens)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                status, accuracy, f1_macro, maybe_recall, full_metrics, config,
+                total_tokens, debate_style)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 experiment["id"],
                 experiment.get("timestamp", ""),
@@ -107,8 +110,9 @@ def save_experiment(experiment: Dict) -> None:
                 metrics.get("f1_macro"),
                 metrics.get("maybe_recall"),
                 json.dumps(metrics),
-                json.dumps(experiment.get("config", {})),
+                json.dumps(config),
                 total_tokens,
+                config.get("debate_style", "adversarial"),
             ),
         )
 
@@ -243,6 +247,7 @@ def get_all_experiments() -> List[Dict]:
                 "maybe_recall": r["maybe_recall"],
                 "full_metrics": json.loads(r["full_metrics"]) if r["full_metrics"] else None,
                 "config": json.loads(r["config"]) if r["config"] else None,
+                "debate_style": r["debate_style"] or "adversarial",
                 "total_tokens": r["total_tokens"],
                 "notes": r["notes"] or "",
                 "tags": json.loads(r["tags"]) if r["tags"] else [],
@@ -279,6 +284,7 @@ def get_experiment(experiment_id: str) -> Optional[Dict]:
             "maybe_recall": row["maybe_recall"],
             "full_metrics": json.loads(row["full_metrics"]) if row["full_metrics"] else None,
             "config": json.loads(row["config"]) if row["config"] else None,
+            "debate_style": row["debate_style"] or "adversarial",
             "total_tokens": row["total_tokens"],
             "notes": row["notes"] or "",
             "tags": json.loads(row["tags"]) if row["tags"] else [],

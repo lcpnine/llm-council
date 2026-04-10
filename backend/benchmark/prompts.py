@@ -88,6 +88,102 @@ PROMPT_VERSIONS = {
             "Critique: {critique}"
         ),
     },
+    "v5_counter_argument": {
+        "generator": (
+            "You are a medical expert. Answer the following question by:\n"
+            "1. Identifying the key claims or findings in the context\n"
+            "2. Citing specific evidence (study results, p-values, sample sizes)\n"
+            "3. Noting any limitations or gaps in the evidence\n"
+            "4. Drawing a conclusion based on the weight of evidence\n\n"
+            "End your response with a single line containing ONLY your final answer.\n"
+            "For yes/no/maybe questions: 'yes', 'no', or 'maybe'\n"
+            "For MCQ: the letter (A, B, C, or D)\n\n"
+            "Question: {question}"
+        ),
+        "skeptic": (
+            "The proposed answer is: {answer}\n\n"
+            "Your role is devil's advocate. Build the strongest possible case AGAINST "
+            "this answer and FOR a different one.\n\n"
+            "For MCQ: argue for a specific alternative letter (not {answer}) with evidence.\n"
+            "For yes/no/maybe: argue for a different class with evidence.\n\n"
+            "Structure your argument:\n"
+            "1. WEAKNESSES in the evidence supporting {answer}\n"
+            "2. EVIDENCE that supports the alternative answer\n"
+            "3. STATE your alternative answer on the final line\n\n"
+            "Question: {question}"
+        ),
+        "judge": (
+            "You have two competing positions on a medical question.\n\n"
+            "Position A: {answer}\n"
+            "Counter-argument (devil's advocate): {critique}\n\n"
+            "Evaluate both positions on their evidence quality alone — "
+            "ignore which was presented first. Choose the better-supported answer.\n\n"
+            "Provide your final answer on a single line.\n"
+            "For yes/no/maybe questions: 'yes', 'no', or 'maybe'\n"
+            "For MCQ: the letter (A, B, C, or D)\n\n"
+            "Question: {question}"
+        ),
+    },
+    "v6_angel_devil": {
+        "angel": (
+            "You are the 'Angel'—a Affirmative counsel medical expert tasked with building the strongest possible case FOR a positive finding or the most likely diagnosis.\n\n"
+            "Your goal: Find every piece of evidence in the context that supports the hypothesis. \n"
+            "1. HIGHLIGHT SUPPORT: Focus on statistically significant results (p < 0.05) and large effect sizes.\n"
+            "2. STRENGTHS: Emphasize the robustness of the study design and the directness of the evidence.\n"
+            "3. CLINICAL RELEVANCE: Explain why the data points toward a 'yes' or the primary option. Build your case with:\n"
+            "  - The most direct evidence from the context supporting your answer\n"
+            "  - Specific data points (effect sizes, p-values, sample sizes) if present\n"
+            "  - The mechanistic or clinical reasoning that makes this answer correct\n\n"
+            "4. Anticipate the strongest counterargument against your answer and explain why it does not overturn your conclusion.\n\n"
+            "Be persuasive but remain factual based ONLY on the provided context.\n"
+            "End your response with a single line: 'ANGEL ANSWER: <answer>'\n"
+            "For yes/no/maybe questions: 'yes', 'no', or 'maybe'\n"
+            "For MCQ: the letter (A, B, C, or D)\n\n"
+            "Question: {question}"
+        ),
+        "devil": (
+            "You are the 'Devil'—a Opposing counsel medical skeptic tasked with finding every reason to DOUBT or REJECT the leading hypothesis.\n\n"
+            "Your goal: Act as a Devil's Advocate to prevent medical error or overconfidence.\n"
+            "Reason independently — you have NOT seen any other argument for this question.\n\n"
+            "1. CRITIQUE LIMITATIONS: Point out small sample sizes, wide confidence intervals, or lack of blinding.\n"
+            "2. IDENTIFY BIAS: Look for confounders, industry funding, or over-extrapolated conclusions.\n"
+            "3. ALTERNATIVE EXPLANATIONS: Suggest why the results might be 'maybe' or 'no' instead of a definitive 'yes'. Build your case with:\n"
+            "  - The most direct evidence from the context supporting your answer\n"
+            "  - Specific data points (effect sizes, p-values, sample sizes) if present\n"
+            "  - The mechanistic or clinical reasoning that makes this answer correct\n\n"
+            "4. Identify the most significant weakness or gap in the evidence "
+            "that someone might use to challenge your conclusion, and address it.\n\n"
+            "Your job is not to be mean, but to be a rigorous safeguard against false positives.\n"
+            "End your response with a single line: 'DEVIL ANSWER: <answer>'\n"
+            "For yes/no/maybe questions: 'yes', 'no', or 'maybe'\n"
+            "For MCQ: the letter (A, B, C, or D)\n\n"
+            "Question: {question}"
+        ),
+        "judge": (
+            "You are the Judge in a structured medical debate. "
+            "Two advocates have independently argued for their positions — neither saw the other's argument. "
+            "You must now weigh both and deliver a verdict.\n\n"
+            "Evaluation rubric:\n"
+            "  1. AGREEMENT CHECK: If both advocates chose the same answer, "
+            "     rule in its favour unless both arguments share the same critical flaw.\n"
+            "  2. EVIDENCE QUALITY: When they disagree, rule for the side with more direct, "
+            "     higher-quality evidence (larger studies, significant p-values, "
+            "     direct rather than inferred support).\n"
+            "  3. REASONING SOUNDNESS: Prefer the argument whose logic is internally consistent "
+            "     and accounts for alternative explanations.\n"
+            "  4. UNCERTAINTY DEFAULT: If arguments are evenly matched and the evidence is "
+            "     genuinely ambiguous, 'maybe' is the honest verdict for yes/no/maybe questions. "
+            "     For MCQ, choose the best-supported option regardless.\n\n"
+            "Briefly state which argument was stronger and why (2-3 sentences), "
+            "then deliver your verdict.\n\n"
+            "End your response with a single line containing ONLY your final answer.\n"
+            "For yes/no/maybe questions: 'yes', 'no', or 'maybe'\n"
+            "For MCQ: the letter (A, B, C, or D)\n\n"
+            "Question: {question}\n"
+            "Angel's argument: {angel_argument}\n"
+            "Devil's argument: {devil_argument}"
+        ),
+    },
     "v3_skeptic_strict": {
         "generator": (
             "You are a medical expert. Answer the following question by:\n"

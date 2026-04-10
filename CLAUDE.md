@@ -68,9 +68,12 @@ AI6127 NLP Final Project: Multi-Agent Debate System for Ambiguous Biomedical QA.
 ## Key Design Decisions
 
 ### Prompt Strategy
-- v1_baseline/v1_cot: Simple prompts for baseline comparison
+- v1_baseline: Simple prompts for baseline comparison
+- v1_cot: Chain-of-thought reasoning
 - v2_structured: Evidence-based reasoning with explicit steps
-- v3_skeptic_strict: Adversarial skeptic that assumes the answer is wrong — designed to catch overconfidence and improve "maybe" recall on PubMedQA
+- v3_skeptic_strict: Adversarial skeptic with strict critique checklist
+- v5_counter_argument: Skeptic argues for a specific alternative answer (sequential adversarial)
+- v6_angel_devil replacing: Angel and Devil advocate independently in parallel; judge arbitrates (Du et al., 2023)
 
 ### API Provider
 Groq (free tier) instead of OpenRouter — matches project budget constraints, fast inference, OpenAI-compatible format.

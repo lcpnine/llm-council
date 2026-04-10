@@ -37,6 +37,7 @@ class BenchmarkRequest(BaseModel):
     dataset: str
     n_samples: int = 100
     n_stages: int = 3
+    debate_style: str = "adversarial"  # "adversarial" | "independent"
 
 
 class BatchRequest(BaseModel):
@@ -136,6 +137,7 @@ async def run_benchmark(request: BenchmarkRequest, background_tasks: BackgroundT
         "dataset": request.dataset,
         "n_samples": request.n_samples,
         "n_stages": request.n_stages,
+        "debate_style": request.debate_style,
     }
 
     tracker.mark_experiment_running(experiment_id, config)
@@ -164,6 +166,7 @@ async def run_batch(request: BatchRequest, background_tasks: BackgroundTasks):
             "dataset": req.dataset,
             "n_samples": req.n_samples,
             "n_stages": req.n_stages,
+            "debate_style": req.debate_style,
         }
         tracker.mark_experiment_running(experiment_id, config)
         await _batch_queue.put(config)
