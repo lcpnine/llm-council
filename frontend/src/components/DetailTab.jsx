@@ -73,6 +73,9 @@ export default function DetailTab({ experiment, results, onBack, onRefresh }) {
         <div><strong>Dataset:</strong> {experiment.dataset}</div>
         <div><strong>Samples:</strong> {experiment.n_samples}</div>
         <div><strong>Stages:</strong> {experiment.n_stages}</div>
+        {experiment.n_stages === 3 && (
+          <div><strong>Debate Style:</strong> {experiment.debate_style || 'adversarial'}</div>
+        )}
         <div><strong>Status:</strong> {experiment.status}</div>
         <div><strong>Total Tokens:</strong> {experiment.total_tokens?.toLocaleString() || '-'}</div>
       </div>
@@ -223,13 +226,20 @@ function ConfusionMatrix({ data, dataset }) {
 
 function DebateLog({ log }) {
   if (!log || Object.keys(log).length === 0) return <p className="muted">No log data</p>;
+  const isIndependent = !!log.expert_b_output;
   return (
     <div className="debate-log">
       {log.generator_output && (
-        <div className="log-section"><h5>Generator</h5><pre>{log.generator_output}</pre></div>
+        <div className="log-section">
+          <h5>{isIndependent ? 'Expert A (Generator)' : 'Generator'}</h5>
+          <pre>{log.generator_output}</pre>
+        </div>
       )}
-      {log.skeptic_output && (
-        <div className="log-section"><h5>Skeptic</h5><pre>{log.skeptic_output}</pre></div>
+      {(log.skeptic_output || log.expert_b_output) && (
+        <div className="log-section">
+          <h5>{isIndependent ? 'Expert B (Independent)' : 'Skeptic'}</h5>
+          <pre>{log.skeptic_output || log.expert_b_output}</pre>
+        </div>
       )}
       {log.judge_output && (
         <div className="log-section"><h5>Judge</h5><pre>{log.judge_output}</pre></div>

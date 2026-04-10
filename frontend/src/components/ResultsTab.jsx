@@ -37,6 +37,7 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
   const [filterStages, setFilterStages] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterTag, setFilterTag] = useState('');
+  const [filterDebateStyle, setFilterDebateStyle] = useState('');
 
   // Compare selection
   const [compareIds, setCompareIds] = useState([]);
@@ -83,9 +84,14 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
       if (filterStages && e.n_stages !== Number(filterStages)) return false;
       if (filterStatus && e.status !== filterStatus) return false;
       if (filterTag && !(e.tags || []).includes(filterTag)) return false;
+      if (filterDebateStyle) {
+        // debate_style is only meaningful for 3-stage experiments
+        if (e.n_stages !== 3) return false;
+        if ((e.debate_style || 'adversarial') !== filterDebateStyle) return false;
+      }
       return true;
     });
-  }, [experiments, filterModel, filterPrompt, filterDataset, filterStages, filterStatus, filterTag]);
+  }, [experiments, filterModel, filterPrompt, filterDataset, filterStages, filterStatus, filterTag, filterDebateStyle]);
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
@@ -214,6 +220,11 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
           <option value="running">Running</option>
           <option value="failed">Failed</option>
         </select>
+        <select value={filterDebateStyle} onChange={e => setFilterDebateStyle(e.target.value)}>
+          <option value="">All Styles</option>
+          <option value="adversarial">Adversarial</option>
+          <option value="independent">Independent</option>
+        </select>
         <select value={filterTag} onChange={e => setFilterTag(e.target.value)}>
           <option value="">All Tags</option>
           {allTagOptions.map(t => <option key={t} value={t}>{t}</option>)}
@@ -243,6 +254,7 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
                 ['prompt_version', 'Prompt'],
                 ['dataset', 'Dataset'],
                 ['n_stages', 'Stg'],
+                ['debate_style', 'Style'],
                 ['status', 'Status'],
                 ['accuracy', 'Accuracy'],
                 ['f1_macro', 'F1'],
@@ -284,6 +296,9 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
                 <td className="mono">{exp.prompt_version}</td>
                 <td>{exp.dataset}</td>
                 <td>{exp.n_stages}</td>
+                <td style={{ fontSize: 11 }}>
+                  {exp.n_stages === 3 ? (exp.debate_style === 'independent' ? '🔀 indep.' : '⚔️ advers.') : '—'}
+                </td>
                 <td>
                   <span className={`status-badge status-${exp.status}`}>{exp.status}</span>
                   {exp.status === 'running' && exp.progress && (

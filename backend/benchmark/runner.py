@@ -32,6 +32,9 @@ class BenchmarkRunner:
         self.n_samples = config.get("n_samples", 100)
         self.experiment_id = config["experiment_id"]
         self.n_stages = config.get("n_stages", 3)
+        # "adversarial": skeptic sees generator's answer (default)
+        # "independent": both experts answer independently, judge arbitrates
+        self.debate_style = config.get("debate_style", "adversarial")
         self.config = config
         self.progress_callback = progress_callback
 
@@ -66,22 +69,33 @@ class BenchmarkRunner:
 
         await asyncio.sleep(0.5)  # Rate limit
 
-        # Stage 2: Skeptic
-        skeptic_prompt = get_prompt(
-            self.prompt_version, "skeptic",
-            question=question.question_text, answer=generator_output
-        )
+        # Stage 2: Skeptic (adversarial) OR Expert B (independent)
+        if self.debate_style == "independent":
+            # Expert B answers independently — does NOT receive Expert A's answer
+            skeptic_prompt = get_prompt(
+                self.prompt_version, "skeptic",
+                question=question.question_text
+            )
+            log_key = "expert_b_output"
+        else:
+            # Traditional adversarial: skeptic critiques the generator's answer
+            skeptic_prompt = get_prompt(
+                self.prompt_version, "skeptic",
+                question=question.question_text, answer=generator_output
+            )
+            log_key = "skeptic_output"
+
         skeptic_response = await query_model(
             self.skeptic_model, [{"role": "user", "content": skeptic_prompt}]
         )
         skeptic_output = skeptic_response["content"] if skeptic_response else ""
-        debate_log["skeptic_output"] = skeptic_output
+        debate_log[log_key] = skeptic_output
         if skeptic_response and skeptic_response.get("token_usage"):
             token_usage["skeptic"] = skeptic_response["token_usage"]
 
         await asyncio.sleep(0.5)  # Rate limit
 
-        # Stage 3: Judge
+        # Stage 3: Judge — receives both outputs regardless of debate style
         judge_prompt = get_prompt(
             self.prompt_version, "judge",
             question=question.question_text,

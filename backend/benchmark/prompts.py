@@ -88,6 +88,86 @@ PROMPT_VERSIONS = {
             "Critique: {critique}"
         ),
     },
+    "v4_independent_debate": {
+        "generator": (
+            "You are a medical expert providing a first independent opinion.\n"
+            "Answer the following question by:\n"
+            "1. Identifying the key claims or findings in the context\n"
+            "2. Citing specific evidence (study results, p-values, sample sizes)\n"
+            "3. Noting any limitations or gaps in the evidence\n"
+            "4. Drawing a conclusion based on the weight of evidence\n\n"
+            "End your response with a single line containing ONLY your final answer.\n"
+            "For yes/no/maybe questions: 'yes', 'no', or 'maybe'\n"
+            "For MCQ: the letter (A, B, C, or D)\n\n"
+            "Question: {question}"
+        ),
+        "skeptic": (
+            "You are a medical research methodologist — your job is to assess what the "
+            "evidence does NOT support, not what it does.\n\n"
+            "Answer the following question by:\n"
+            "1. Identifying weaknesses in the study design, sample size, or statistical reporting\n"
+            "2. Noting what the evidence explicitly fails to prove or leaves uncertain\n"
+            "3. Flagging any confounders, generalizability issues, or missing controls\n"
+            "4. Drawing a conclusion ONLY from what is definitively established — "
+            "if the evidence is insufficient for a definitive answer, say 'maybe'\n\n"
+            "End your response with a single line containing ONLY your final answer.\n"
+            "For yes/no/maybe questions: 'yes', 'no', or 'maybe'\n"
+            "For MCQ: the letter (A, B, C, or D)\n\n"
+            "Question: {question}"
+        ),
+        "judge": (
+            "You are the final arbiter. Two independent medical experts have answered "
+            "the same question without consulting each other.\n\n"
+            "Expert A's answer: {answer}\n"
+            "Expert B's answer: {critique}\n\n"
+            "Your task:\n"
+            "- If both experts AGREE: confirm their shared answer with high confidence\n"
+            "- If experts DISAGREE: reason through the medical evidence carefully. "
+            "Identify which expert's reasoning is better supported. "
+            "If the disagreement itself reflects genuine ambiguity in the evidence, "
+            "'maybe' is the honest answer for yes/no/maybe questions.\n\n"
+            "Provide your final answer on a single line.\n"
+            "For yes/no/maybe questions: 'yes', 'no', or 'maybe'\n"
+            "For MCQ: the letter (A, B, C, or D)\n\n"
+            "Question: {question}"
+        ),
+    },
+    "v5_devil_advocate": {
+        "generator": (
+            "You are a medical expert. Answer the following question by:\n"
+            "1. Identifying the key claims or findings in the context\n"
+            "2. Citing specific evidence (study results, p-values, sample sizes)\n"
+            "3. Noting any limitations or gaps in the evidence\n"
+            "4. Drawing a conclusion based on the weight of evidence\n\n"
+            "End your response with a single line containing ONLY your final answer.\n"
+            "For yes/no/maybe questions: 'yes', 'no', or 'maybe'\n"
+            "For MCQ: the letter (A, B, C, or D)\n\n"
+            "Question: {question}"
+        ),
+        "skeptic": (
+            "The proposed answer is: {answer}\n\n"
+            "Your role is devil's advocate. Build the strongest possible case AGAINST "
+            "this answer and FOR a different one.\n\n"
+            "For MCQ: argue for a specific alternative letter (not {answer}) with evidence.\n"
+            "For yes/no/maybe: argue for a different class with evidence.\n\n"
+            "Structure your argument:\n"
+            "1. WEAKNESSES in the evidence supporting {answer}\n"
+            "2. EVIDENCE that supports the alternative answer\n"
+            "3. STATE your alternative answer on the final line\n\n"
+            "Question: {question}"
+        ),
+        "judge": (
+            "You have two competing positions on a medical question.\n\n"
+            "Position A: {answer}\n"
+            "Counter-argument (devil's advocate): {critique}\n\n"
+            "Evaluate both positions on their evidence quality alone — "
+            "ignore which was presented first. Choose the better-supported answer.\n\n"
+            "Provide your final answer on a single line.\n"
+            "For yes/no/maybe questions: 'yes', 'no', or 'maybe'\n"
+            "For MCQ: the letter (A, B, C, or D)\n\n"
+            "Question: {question}"
+        ),
+    },
     "v3_skeptic_strict": {
         "generator": (
             "You are a medical expert. Answer the following question by:\n"
