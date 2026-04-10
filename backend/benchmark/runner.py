@@ -40,54 +40,86 @@ class BenchmarkRunner:
         debate_log = {}
         token_usage = {"generator": {}, "skeptic": {}, "judge": {}}
 
-        # Stage 1: Generator
-        generator_prompt = get_prompt(
-            self.prompt_version, "generator", question=question.question_text
-        )
-        gen_response = await query_model(
-            self.generator_model, [{"role": "user", "content": generator_prompt}]
-        )
-        generator_output = gen_response["content"] if gen_response else ""
-        debate_log["generator_output"] = generator_output
-        if gen_response and gen_response.get("token_usage"):
-            token_usage["generator"] = gen_response["token_usage"]
+        # --- BRANCH 1: ANGEL-DEVIL SYSTEM (v5) ---
+        if "angel_devil" in self.prompt_version:
+            # Stage 1 & 2: Parallel execution
+            angel_prompt = get_prompt(self.prompt_version, "angel", question=question.question_text)
+            devil_prompt = get_prompt(self.prompt_version, "devil", question=question.question_text)
 
-        # For single-stage baselines, use generator output directly
-        if self.n_stages == 1:
-            predicted = extract_answer(generator_output, question.dataset)
-            return {
-                "question_id": question.id,
-                "predicted": predicted,
-                "gold": question.gold_answer,
-                "correct": int(predicted == question.gold_answer),
-                "debate_log": debate_log,
-                "token_usage": token_usage,
-            }
+            angel_task = query_model(self.generator_model, [{"role": "user", "content": angel_prompt}])
+            devil_task = query_model(self.skeptic_model, [{"role": "user", "content": devil_prompt}])
+            
+            # --- Inside the angel_devil IF block ---
+            angel_res, devil_res = await asyncio.gather(angel_task, devil_task)
 
-        await asyncio.sleep(0.5)  # Rate limit
+            debate_log["angel_output"] = angel_res["content"] if angel_res else ""
+            debate_log["devil_output"] = devil_res["content"] if devil_res else ""
 
-        # Stage 2: Skeptic
-        skeptic_prompt = get_prompt(
-            self.prompt_version, "skeptic",
-            question=question.question_text, answer=generator_output
-        )
-        skeptic_response = await query_model(
-            self.skeptic_model, [{"role": "user", "content": skeptic_prompt}]
-        )
-        skeptic_output = skeptic_response["content"] if skeptic_response else ""
-        debate_log["skeptic_output"] = skeptic_output
-        if skeptic_response and skeptic_response.get("token_usage"):
-            token_usage["skeptic"] = skeptic_response["token_usage"]
+            # FIX: Assign to specific keys instead of calling _add_tokens here
+            if angel_res and "token_usage" in angel_res:
+                token_usage["generator"] = angel_res["token_usage"]
+                
+            if devil_res and "token_usage" in devil_res:
+                token_usage["skeptic"] = devil_res["token_usage"]
 
-        await asyncio.sleep(0.5)  # Rate limit
+            # Stage 3: Judge for v5
+            judge_prompt = get_prompt(
+                self.prompt_version, "judge",
+                question=question.question_text,
+                angel_argument=debate_log.get("angel_output", ""), 
+                devil_argument=debate_log.get("devil_output", "")
+            )
 
-        # Stage 3: Judge
-        judge_prompt = get_prompt(
-            self.prompt_version, "judge",
-            question=question.question_text,
-            answer=generator_output,
-            critique=skeptic_output
-        )
+        else: 
+            # Stage 1: Generator
+            generator_prompt = get_prompt(
+                self.prompt_version, "generator", question=question.question_text
+            )
+            gen_response = await query_model(
+                self.generator_model, [{"role": "user", "content": generator_prompt}]
+            )
+            generator_output = gen_response["content"] if gen_response else ""
+            debate_log["generator_output"] = generator_output
+            if gen_response and gen_response.get("token_usage"):
+                token_usage["generator"] = gen_response["token_usage"]
+
+            # For single-stage baselines, use generator output directly
+            if self.n_stages == 1:
+                predicted = extract_answer(generator_output, question.dataset)
+                return {
+                    "question_id": question.id,
+                    "predicted": predicted,
+                    "gold": question.gold_answer,
+                    "correct": int(predicted == question.gold_answer),
+                    "debate_log": debate_log,
+                    "token_usage": token_usage,
+                }
+
+            await asyncio.sleep(0.5)  # Rate limit
+
+            # Stage 2: Skeptic
+            skeptic_prompt = get_prompt(
+                self.prompt_version, "skeptic",
+                question=question.question_text, answer=generator_output
+            )
+            skeptic_response = await query_model(
+                self.skeptic_model, [{"role": "user", "content": skeptic_prompt}]
+            )
+            skeptic_output = skeptic_response["content"] if skeptic_response else ""
+            debate_log["skeptic_output"] = skeptic_output
+            if skeptic_response and skeptic_response.get("token_usage"):
+                token_usage["skeptic"] = skeptic_response["token_usage"]
+
+            await asyncio.sleep(0.5)  # Rate limit
+
+            # Stage 3: Judge
+            judge_prompt = get_prompt(
+                self.prompt_version, "judge",
+                question=question.question_text,
+                answer=generator_output,
+                critique=skeptic_output
+            )
+
         judge_response = await query_model(
             self.judge_model, [{"role": "user", "content": judge_prompt}]
         )
@@ -159,6 +191,9 @@ class BenchmarkRunner:
             "id": self.experiment_id,
             "timestamp": datetime.utcnow().isoformat(),
             "model": self.model,
+            "generator_model": self.generator_model,   
+            "skeptic_model": self.skeptic_model,        
+            "judge_model": self.judge_model,       
             "prompt_version": self.prompt_version,
             "dataset": self.dataset_name,
             "n_samples": len(questions),

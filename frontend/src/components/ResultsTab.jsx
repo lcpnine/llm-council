@@ -13,13 +13,12 @@ function shortName(model) {
 // Returns multi-model info from config when roles use different models
 function getModelInfo(exp) {
   const cfg = exp.config;
+  const isAngelDevil = exp.prompt_version?.includes('angel_devil');
   if (exp.n_stages === 3 && cfg) {
     const g = cfg.generator_model || cfg.model || exp.model;
     const s = cfg.skeptic_model   || cfg.model || exp.model;
     const j = cfg.judge_model     || cfg.model || exp.model;
-    if (g !== s || s !== j) {
-      return { isMulti: true, generator: g, skeptic: s, judge: j };
-    }
+    return { isMulti: true, isAngelDevil, generator: g, skeptic: s, judge: j };
   }
   return { isMulti: false, model: exp.model };
 }
@@ -269,6 +268,15 @@ export default function ResultsTab({ experiments, onViewDetail, onRefresh, onSel
                 <td className="mono">
                   {(() => {
                     const m = getModelInfo(exp);
+                    if (m.isAngelDevil) {
+                      return (
+                        <div title={`Angel: ${m.generator}\nDevil: ${m.skeptic}\nJudge: ${m.judge}`}>
+                          <div style={{ fontSize: 11 }}><span style={{ color: '#888' }}>A:</span> {shortName(m.generator)}</div>
+                          <div style={{ fontSize: 11 }}><span style={{ color: '#888' }}>D:</span> {shortName(m.skeptic)}</div>
+                          <div style={{ fontSize: 11 }}><span style={{ color: '#888' }}>J:</span> {shortName(m.judge)}</div>
+                        </div>
+                      );
+                    }
                     if (m.isMulti) {
                       return (
                         <div title={`Generator: ${m.generator}\nSkeptic: ${m.skeptic}\nJudge: ${m.judge}`}>

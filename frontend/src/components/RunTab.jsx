@@ -25,6 +25,8 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
   const [batchDatasets, setBatchDatasets] = useState(['pubmedqa']);
   const [batchStagesList, setBatchStagesList] = useState([3]);
 
+  const isAngelDevil = runPrompt.includes('angel_devil');
+
   const handleRunBenchmark = async () => {
     setRunLoading(true);
     setRunMessage('');
@@ -120,27 +122,52 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
         <>
           <div className="form-grid">
             {runStages === 3 ? (
-              <>
-                <label>
-                  Generator Model
-                  <select value={runGeneratorModel} onChange={e => setRunGeneratorModel(e.target.value)}>
-                    {models.map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                </label>
-                <label>
-                  Skeptic Model
-                  <select value={runSkepticModel} onChange={e => setRunSkepticModel(e.target.value)}>
-                    {models.map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                </label>
-                <label>
-                  Judge Model
-                  <select value={runJudgeModel} onChange={e => setRunJudgeModel(e.target.value)}>
-                    {models.map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                </label>
-              </>
+              /* Nested Ternary: Check if version is v5 or v2/v3 */
+              isAngelDevil ? (
+                <>
+                  <label>
+                    Angel Model
+                    <select value={runGeneratorModel} onChange={e => setRunGeneratorModel(e.target.value)}>
+                      {models.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </label>
+                  <label>
+                    Devil Model
+                    <select value={runSkepticModel} onChange={e => setRunSkepticModel(e.target.value)}>
+                      {models.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </label>
+                  <label>
+                    Judge Model
+                    <select value={runJudgeModel} onChange={e => setRunJudgeModel(e.target.value)}>
+                      {models.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </label>
+                </>
+              ) : (
+                <>
+                  <label>
+                    Generator Model
+                    <select value={runGeneratorModel} onChange={e => setRunGeneratorModel(e.target.value)}>
+                      {models.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </label>
+                  <label>
+                    Skeptic Model
+                    <select value={runSkepticModel} onChange={e => setRunSkepticModel(e.target.value)}>
+                      {models.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </label>
+                  <label>
+                    Judge Model
+                    <select value={runJudgeModel} onChange={e => setRunJudgeModel(e.target.value)}>
+                      {models.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </label>
+                </>
+              )
             ) : (
+              /* Fallback for runStages === 1 */
               <label>
                 Model
                 <select value={runModel} onChange={e => setRunModel(e.target.value)}>
