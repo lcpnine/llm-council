@@ -15,7 +15,6 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
   const [runDataset, setRunDataset] = useState('pubmedqa');
   const [runSamples, setRunSamples] = useState(100);
   const [runStages, setRunStages] = useState(3);
-  const [runDebateStyle, setRunDebateStyle] = useState('adversarial');
   const isAngelDevil = runPrompt.includes('angel_devil');
   const [runLoading, setRunLoading] = useState(false);
   const [runMessage, setRunMessage] = useState('');
@@ -41,7 +40,6 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
             dataset: runDataset,
             n_samples: runSamples,
             n_stages: runStages,
-            debate_style: runDebateStyle,
           }
         : {
             model: runModel,
@@ -175,15 +173,6 @@ export default function RunTab({ models, promptVersions, baselines, onRefresh })
                 <option value={3}>3 (Full debate)</option>
               </select>
             </label>
-            {runStages === 3 && !isAngelDevil && (
-              <label>
-                Debate Style
-                <select value={runDebateStyle} onChange={e => setRunDebateStyle(e.target.value)}>
-                  <option value="adversarial">Adversarial — Skeptic critiques Generator</option>
-                  <option value="independent">Independent — Both experts answer separately</option>
-                </select>
-              </label>
-            )}
           </div>
           <div className="form-actions">
             <button className="btn-primary" onClick={handleRunBenchmark} disabled={runLoading}>
