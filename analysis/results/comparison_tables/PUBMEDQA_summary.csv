@@ -1,27 +1,23 @@
 Setup,Prompt Version,Generator Model,Accuracy,F1_Macro,Δ Accuracy,p-value,Cohens_d,Effect_Size
-3-stage (Debate),v1_cot,llama-3.3-70b-versatile,71.0%,,+3.0%,0.3074,0.065194287781876,negligible
-1-stage (Baseline),v1_cot,llama-3.3-70b-versatile,71.0%,0.5116,-,-,,
 1-stage (Baseline),v1_baseline,qwen/qwen3-32b,71.0%,0.6356,-,-,,
-3-stage (Debate),v1_baseline,qwen/qwen3-32b,71.0%,,+0.0%,0.2636,0.0,negligible
+1-stage (Baseline),v1_cot,llama-3.3-70b-versatile,71.0%,0.5116,-,-,,
 1-stage (Baseline),v1_baseline,llama-3.3-70b-versatile,70.0%,0.6023,-,-,,
 3-stage (Debate),v1_baseline,llama-3.3-70b-versatile,70.0%,0.6166,+2.5%,0.0442*,0.0539556127885026,negligible
-3-stage (Debate),v2_structured,llama-3.3-70b-versatile,68.0%,0.3226,+0.0%,0.6625,0.0,negligible
 1-stage (Baseline),v2_structured,llama-3.3-70b-versatile,68.0%,0.5182,-,-,,
+3-stage (Debate),v2_structured,llama-3.3-70b-versatile,68.0%,0.3226,+0.0%,0.6625,0.0,negligible
 3-stage (Debate),v5_angel_devil,llama-3.3-70b-versatile,67.0%,0.5143,-1.0%,0.8383,-0.0213516371595103,negligible
 1-stage (Baseline),v1_baseline,meta-llama/llama-4-scout-17b-16e-instruct,65.0%,0.5918,-,-,,
-3-stage (Debate),v1_baseline,meta-llama/llama-4-scout-17b-16e-instruct,65.0%,,+0.0%,,0.0,negligible
-3-stage (Debate),v1_baseline,llama-3.1-8b-instant,60.0%,,+0.0%,0.4576,0.0,negligible
 1-stage (Baseline),v1_baseline,llama-3.1-8b-instant,60.0%,0.5319,-,-,,
 3-stage (Debate),v5_counter_argument,llama-3.3-70b-versatile,49.0%,0.372,-19.0%,0.0237*,-0.3929866443962144,small
-3-stage (Debate),v2_structured,llama-3.3-70b-versatile,44.0%,0.3226,-23.5%,< 0.001***,-0.4869616640797213,small
 3-stage (Heterogeneous),v2_structured,llama-3.3-70b-versatile,44.0%,0.4421,-24.0%,0.0023**,-0.4982728791224396,small
+3-stage (Debate),v2_structured,llama-3.3-70b-versatile,44.0%,0.3226,-23.5%,< 0.001***,-0.4869616640797213,small
 3-stage (Heterogeneous),v2_structured,qwen/qwen3-32b,39.0%,0.4027,-32.0%,< 0.001***,-0.6793151921154467,medium
 3-stage (Heterogeneous),v2_structured,qwen/qwen3-32b,36.0%,0.373,-35.0%,< 0.001***,-0.7493598765720578,medium
 3-stage (Heterogeneous),v2_structured,llama-3.3-70b-versatile,34.0%,0.3543,-34.0%,< 0.001***,-0.723240570679579,medium
 3-stage (Heterogeneous),v2_structured,llama-3.1-8b-instant,33.0%,0.3468,-27.0%,< 0.001***,-0.5623169838897386,medium
 3-stage (Heterogeneous),v2_structured,llama-3.1-8b-instant,32.0%,0.3214,-28.0%,< 0.001***,-0.5853694070049636,medium
-3-stage (Debate),v3_skeptic_strict,qwen/qwen3-32b,31.0%,0.3143,-36.5%,< 0.001***,-0.7841985714457911,medium
 3-stage (Heterogeneous),v2_structured,llama-3.3-70b-versatile,31.0%,0.3226,-37.0%,< 0.001***,-0.7965743573807885,medium
+3-stage (Debate),v3_skeptic_strict,qwen/qwen3-32b,31.0%,0.3143,-36.5%,< 0.001***,-0.7841985714457911,medium
 3-stage (Heterogeneous),v2_structured,llama-3.3-70b-versatile,24.0%,0.235,-44.0%,< 0.001***,-0.9838699100999072,large
 3-stage (Debate),v3_skeptic_strict,llama-3.1-8b-instant,23.0%,0.2169,-44.5%,< 0.001***,-0.999463883024902,large
 3-stage (Heterogeneous),v2_structured,llama-3.1-8b-instant,21.0%,0.1907,-39.0%,< 0.001***,-0.865705305675635,large

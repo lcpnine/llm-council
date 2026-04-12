@@ -163,8 +163,8 @@ results.append({
 v5_homo = df[(df['Prompt Version'] == 'v5_angel_devil') &
              (df['Generator Model'] == df.get('Judge Model', df['Generator Model']))]
 
-pubmedqa_acc, pubmedqa_f1, pubmedqa_maybe = get_config_results('v5_angel', 'PUBMEDQA', 'v5_angel_devil', None, None)
-medqa_acc, medqa_f1, _ = get_config_results('v5_angel', 'MEDQA', 'v5_angel_devil', None, None)
+pubmedqa_acc, pubmedqa_f1, pubmedqa_maybe = get_config_results('v5_angel', 'PUBMEDQA', 'v5_angel_devil', None, 3)
+medqa_acc, medqa_f1, _ = get_config_results('v5_angel', 'MEDQA', 'v5_angel_devil', None, 3)
 avg_f1 = np.nanmean([pubmedqa_f1, medqa_f1])
 
 results.append({
@@ -177,18 +177,13 @@ results.append({
 })
 
 # 8. v5 angel-devil (hetero) - heterogeneous
-# This is harder to detect, but usually has different generator/judge models
-v5_all = df[df['Prompt Version'] == 'v5_angel_devil']
-# For MedQA heterogeneous, there should be experiments with different models
-medqa_v5 = v5_all[v5_all['Dataset'] == 'MEDQA']
-if len(medqa_v5) > 0:
-    # Try to find heterogeneous (different models)
-    hetero = medqa_v5[medqa_v5['Generator Model'] != medqa_v5.get('Skeptic Model', medqa_v5['Generator Model'])]
-    if len(hetero) > 0:
-        medqa_acc = hetero['Accuracy_num'].mean()
-        medqa_f1 = hetero['F1_Macro'].mean()
-    else:
-        medqa_acc, medqa_f1 = None, None
+# Filter for 3-stage (Heterogeneous) setup
+v5_hetero = df[(df['Prompt Version'] == 'v5_angel_devil') &
+               (df['Setup'] == '3-stage (Heterogeneous)')]
+medqa_hetero = v5_hetero[v5_hetero['Dataset'] == 'MEDQA']
+if len(medqa_hetero) > 0:
+    medqa_acc = medqa_hetero['Accuracy_num'].mean()
+    medqa_f1 = medqa_hetero['F1_Macro'].mean()
 else:
     medqa_acc, medqa_f1 = None, None
 
