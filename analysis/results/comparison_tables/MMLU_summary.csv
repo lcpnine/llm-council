@@ -1,0 +1,10 @@
+Setup,Prompt Version,Generator Model,Accuracy,F1_Macro,Δ Accuracy,p-value,Cohens_d,Effect_Size
+3-stage (Debate),v2_structured,llama-3.3-70b-versatile,94.0%,0.9406,+7.7%,< 0.001***,0.2605823837148652,small
+1-stage (Baseline),v1_cot,llama-3.3-70b-versatile,90.0%,0.8991,-,-,,
+3-stage (Debate),v1_cot,llama-3.3-70b-versatile,90.0%,,+0.0%,0.0523,0.0,negligible
+1-stage (Baseline),v1_baseline,llama-3.3-70b-versatile,88.0%,0.8809,-,-,,
+3-stage (Debate),v1_baseline,llama-3.3-70b-versatile,88.0%,,-2.0%,0.1687,-0.063952947939108,negligible
+1-stage (Baseline),v1_baseline,llama-3.1-8b-instant,81.0%,0.8062,-,-,,
+3-stage (Debate),v1_baseline,llama-3.1-8b-instant,81.0%,,+0.0%,,0.0,negligible
+3-stage (Debate),v3_skeptic_strict,llama-3.3-70b-versatile,64.0%,0.7588,-22.3%,0.0068**,-0.5341175645683163,medium
+3-stage (Debate),v3_skeptic_strict,llama-3.1-8b-instant,13.0%,0.2154,-73.3%,< 0.001***,-2.155271841201684,large

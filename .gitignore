@@ -30,3 +30,7 @@ data/experiments.db
 data/custom_prompts.json
 
 settings.json
+
+# Analysis documentation (team-internal)
+analysis/TEAM_CONTRIBUTIONS.md
+ppt and script.txt
