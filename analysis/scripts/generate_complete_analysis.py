@@ -661,11 +661,11 @@ class ComprehensiveAnalysisGenerator:
         if len(attr_df) == 0:
             return
 
-        # Calculate totals
-        both_correct = attr_df['Both Correct'].sum()
-        fixed = attr_df['Fixed by Debate'].sum()
-        broke = attr_df['Broke by Debate'].sum()
-        both_wrong = attr_df['Both Wrong'].sum()
+        # Calculate totals (convert to numeric first to avoid string concatenation)
+        both_correct = pd.to_numeric(attr_df['Both Correct'], errors='coerce').sum()
+        fixed = pd.to_numeric(attr_df['Fixed by Debate'], errors='coerce').sum()
+        broke = pd.to_numeric(attr_df['Broke by Debate'], errors='coerce').sum()
+        both_wrong = pd.to_numeric(attr_df['Both Wrong'], errors='coerce').sum()
 
         fig, ax = plt.subplots(figsize=(10, 6))
 
