@@ -24,19 +24,18 @@ We evaluated a multi-agent debate system (Generator → Skeptic → Judge) acros
 ├── requirements.txt                # Python dependencies
 │
 ├── docs/                          # Documentation & paper sections
-│   ├── SECTION_6.2_RESULTS.md          # Quantitative results (for paper)
-│   └── EVALUATION_SUMMARY.md           # Technical summary
+│   └── SECTION_6.2_RESULTS.md          # Quantitative results (for paper Section 6.2)
 │
 ├── scripts/                       # Analysis scripts (reproducibility)
 │   ├── generate_complete_analysis.py           # Master script (generates everything)
-│   ├── filter_real_experiments.py              # Filter experiments with complete data
-│   └── (other analysis scripts)                # Legacy/specialized scripts
+│   ├── create_ppt_results_table.py             # Generate PPT summary table
+│   └── update_all_metrics.py                   # Recalculate metrics for all experiments
 │
-└── results/      # All analysis outputs
+└── results/                      # All analysis outputs
     ├── EXPERIMENTS_SUMMARY_TABLE.csv             # Main results table (47 experiments × 49 columns)
-    ├── experiments_all_2026-04-10-4.json         # Raw experiment data (47 experiments)
+    ├── PPT_MAIN_RESULTS_TABLE.csv                # Summary table for presentation
     ├── db_experiments.csv                        # Experiment metadata (27 experiments)
-    ├── results_filtered_highquality.csv          # Filtered predictions (20 high-quality experiments)
+    ├── results_filtered_highquality.csv          # Filtered predictions (2000+ questions)
     ├── task_difficulty_class_accuracy_filtered.png  # Task difficulty by class
     ├── task_difficulty_stratified_filtered.png      # Task difficulty stratified
     ├── charts/                                   # 5 comparison charts
@@ -142,9 +141,9 @@ This generates:
 - 5 comparison tables
 
 ### Input Data
-- Primary: `results/experiments_all_2026-04-10-4.json` (47 complete experiments)
-- Supplementary: `results/results_filtered_highquality.csv` (20 high-quality experiments)
-- Metadata: `results/db_experiments.csv` (27 baseline/debate experiments)
+- Primary: `../data/exports/experiments_all_2026-04-10-4.json` (47 complete experiments)
+- Supplementary: `results/results_filtered_highquality.csv` (2000+ predictions from 20 high-quality experiments)
+- Metadata: `results/db_experiments.csv` (27 baseline/debate experiments with token usage)
 
 ### Output
 All analysis outputs saved to `results/`:
