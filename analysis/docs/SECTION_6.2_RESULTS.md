@@ -18,21 +18,26 @@ Comprehensive analysis of **47 experiments** (with complete per-question data) a
 
 ## Agent Attribution Analysis
 
-Agent-level error analysis (Table 6.2) reveals debate mechanism effectiveness by categorizing outcomes into four mutually exclusive categories:
+Agent-level error analysis (Table 6.2) reveals debate mechanism effectiveness by categorizing outcomes across all 35 3-stage experiments (3500 predictions) into four mutually exclusive categories:
 
 | Category | Overall | MMLU | MedQA | PubMedQA |
 |----------|---------|------|-------|----------|
-| Both Correct | 34.0% | 47.0% | 25.0% | 25.5% |
-| Debate Fixed | 10.0% | 47.0% | 51.0% | 4.6% |
-| Debate Broke | 35.2% | 0.0% | 1.0% | 34.7% |
-| Both Wrong | 20.8% | 6.0% | 23.0% | 35.2% |
+| Both Correct | 29.8% | 37.3% | 34.3% | 25.0% |
+| Debate Fixed | 18.7% | 19.7% | 28.6% | 10.9% |
+| Debate Broke | 26.1% | 32.3% | 14.0% | 34.6% |
+| Both Wrong | 25.3% | 10.7% | 23.1% | 29.6% |
 
-**Fix-to-Break Ratio:**
+**Overall Fix-to-Break Ratio by Dataset:**
+- MedQA: 2.05 (401 fixed, 196 broke) — Best overall
+- MMLU: 0.61 (59 fixed, 97 broke) — Mixed results
+- PubMedQA: 0.32 (196 fixed, 622 broke) — Debate hurts more than helps
+
+**Best-Case Performance (v2_structured):**
 - MMLU: Perfect (∞) — 47 corrections, 0 errors introduced
-- MedQA: Strong (50.0) — 51 corrections, 1 error introduced
-- PubMedQA: Poor (0.13) — 75 corrections, 277 errors introduced
+- MedQA: Excellent (51.0) — 51 corrections, 1 error introduced
+- PubMedQA: Poor (0.72) — 28 corrections, 39 errors introduced
 
-**Interpretation:** Skeptic's critique provides valuable error correction on MCQ tasks but introduces systematic errors on ambiguous classification through over-aggressive skepticism.
+**Interpretation:** Debate shows net positive impact on MedQA (2.05 ratio) but net negative on MMLU (0.61) and PubMedQA (0.32). The best configurations (v2_structured) achieve near-perfect performance on MMLU and MedQA, but even optimal prompts struggle on PubMedQA's ambiguous 3-class task. Debate mechanism introduces more errors than it fixes across most configurations.
 
 ---
 
@@ -197,8 +202,6 @@ Top 5 heterogeneous experiments all use:
 2. **For PubMedQA:** Stick with homogeneous (same model throughout)
 3. **General:** Prioritize prompt engineering over model size scaling
 
-**See:** `analysis/results/HETEROGENEOUS_MODEL_ANALYSIS.md` for detailed breakdown.
-
 ---
 
 ## Qualitative Error Analysis
@@ -236,8 +239,6 @@ Manual examination of 126 sampled predictions (48 correct, 48 incorrect, 30 mayb
 - Judge predicts "maybe" when correct answer is definitive
 
 **Conclusion:** v3_skeptic_strict induces excessive uncertainty, degrading accuracy through over-cautious Judge behavior.
-
-**See:** `analysis/analysis_results/qualitative_summary.txt` for detailed findings.
 
 ---
 
