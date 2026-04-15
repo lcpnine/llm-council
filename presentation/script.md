@@ -4,17 +4,17 @@
    Medical question answering is a high-stakes NLP task where errors can have serious clinical consequences. While LLMs have shown impressive performance on general QA benchmarks, they tend to exhibit overconfidence in medical settings, either forcing definitive yes-or-no answers when the evidence is genuinely ambiguous or hedging unnecessarily when the evidence is clear. This overconfidence is particularly problematic for questions that require careful interpretation of statistical evidence, such as those in PubMedQA, where the correct answer is often "maybe" because the evidence is insufficient or contradictory. Existing approaches either rely solely on prompt engineering, which lacks systematic critique, or on fine-tuned models, which are constrained by their training distribution. In this work, we investigate whether a multi-agent adversarial debate pipeline where a Generator produces an initial answer, a Skeptic challenges it with statistical and logical critique, and a Judge synthesizes the debate into a final decision, can produce more accurate and better-calibrated answers than both single-agent prompting baselines and a fine-tuned PubMedBERT model. We evaluate across three medical QA datasets, namely PubMedQA, MedQA, and MMLU and compare multiple prompt strategies and model configurations to understand when debate helps and when it does not.
 
 2. **System Architecture**  
-   The system is built around a Generator-Skeptic-Judge pipeline. In the baseline configuration, n\\\_stages=1 runs only the Generator to produce a direct answer. In the standard debate configuration, n\\\_stages=3 passes the Generator's output sequentially to a Skeptic, which challenges it with critique, and then to a Judge, which synthesizes the exchange into a final decision. The v6\\\_angel\\\_devil variant takes an alternate approach and replaces the sequential path entirely: there is no generator stage. Instead, an Angel and a Devil advocate both receive the raw question directly, run in parallel with no shared context, and the Judge arbitrates between their independent arguments. 
+   The system is built around a Generator-Skeptic-Judge pipeline. In the baseline configuration, n\\\_stages=1 runs only the Generator to produce a direct answer. In the standard debate configuration, n\\\_stages=3 passes the Generator's output sequentially to a Skeptic, which challenges it with critique, and then to a Judge, which synthesizes the exchange into a final decision. The v5\\\_angel\\\_devil variant takes an alternate approach and replaces the sequential path entirely: there is no generator stage. Instead, an Angel and a Devil advocate both receive the raw question directly, run in parallel with no shared context, and the Judge arbitrates between their independent arguments. 
 
    All inference is served through the Groq API, an OpenAI-compatible endpoint, using four hosted models: \`llama-3.3-70b-versatile\`, \`llama-3.1-8b-instant\`, \`qwen/qwen3-32b\`, and \`meta-llama/llama-4-scout-17b-16e-instruct\`. Token usage is recorded when returned by the API, accumulated per stage and per experiment to support cost-effectiveness analysis.
 
-   In addition to the LLM-based pipeline, the system supports a fifth model type — fine-tuned PubMedBERT — which bypasses the Generator-Skeptic-Judge pipeline entirely and runs as a direct classifier. When PubMedBERT is selected in the platform, the backend routes the question straight to the fine-tuned model, returning a predicted label without any API calls to Groq. This makes it a clean apples-to-apples comparison — same datasets, same evaluation code, same platform — but a fundamentally different inference approach. 
+   PubMedBERT was evaluated externally rather than through the platform. The fine-tuned models were run offline and the results compared against the same 100-question sets used by the LLM platform, using the same evaluation code. This makes it a clean apples-to-apples comparison — same datasets, same evaluation logic — but a fundamentally different inference approach.
 
    Datasets are loaded from HuggingFace: PubMedQA as a three-label (yes/no/maybe) evidence QA task, MedQA as USMLE-style four-option multiple choice, and MMLU restricted to four medical subsets — clinical knowledge, medical genetics, anatomy, and professional medicine. The evaluator parses LLM outputs into normalized labels via extract\\\_answer(), and computes accuracy, F1 macro, per-class precision and recall, and maybe recall via compute\\\_metrics(). Experiments are persisted to a SQLite database with per-question debate logs and full token breakdowns.  
 3. **Baselines used**  
    We establish five prompting baselines to evaluate the contribution of each design decision. The first is v1\\\_baseline at n\\\_stages=1, a single-agent direct prompt with no chain-of-thought, establishing the floor. The second is v1\\\_cot at n\\\_stages=1, which adds explicit step-by-step reasoning to the same single-agent setup, isolating the effect of structured reasoning from the effect of debate. The third is v1\\\_baseline at n\\\_stages=3, which runs the full three-stage debate pipeline using the same minimal prompts, isolating the structural contribution of the debate loop itself. The fourth is v2\\\_structured, a three-stage setup that adds an evidence-based reasoning scaffold for the Generator and a systematic critique checklist for the Skeptic. The fifth is v3\\\_skeptic\\\_strict, which tightens the Skeptic's mandate specifically around p-values, confounders, generalizability, overconfidence, cherry-picking, and logical leaps between evidence and conclusion. Together these five conditions allow us to test whether performance gains are attributable to CoT reasoning, debate structure, or progressively stricter adversarial prompting.  
    In addition to the prompting baselines, we introduce a classical NLP baseline using a fine-tuned PubMedBERT model. The motivation is to answer a fundamentally different question — not whether better prompting helps, but whether our multi-agent debate system can outperform a model that was explicitly trained on this data. We chose PubMedBERT over BioBERT because it was pre-trained from scratch exclusively on PubMed abstracts and full-text papers, giving it stronger biomedical language understanding without general-domain bias.  
-   We fine-tuned three separate models — one per dataset — rather than a single combined model, to ensure a fair comparison. The architecture differs per task: a SequenceClassification head for PubMedQA's 3-class yes/no/maybe format, and a MultipleChoice head for MedQA and MMLU's 4-option format. A key challenge was class imbalance in PubMedQA — the maybe class is underrepresented, causing the model to never predict it initially. We addressed this using weighted cross-entropy loss, which brought maybe recall up to 0.53. Training was done on Kaggle GPU T4 x2 with a learning rate of 2e-5, warmup ratio of 0.1, weight decay of 0.01, and 5 epochs with early stopping. In the platform, these three models appear as a single `pubmedbert` entry in the model dropdown — the backend automatically loads the correct dataset-specific weights based on whichever dataset is selected.  
+   We fine-tuned three separate models — one per dataset — rather than a single combined model, to ensure a fair comparison. The architecture differs per task: a SequenceClassification head for PubMedQA's 3-class yes/no/maybe format, and a MultipleChoice head for MedQA and MMLU's 4-option format. A key challenge was class imbalance in PubMedQA — the maybe class is underrepresented, causing the model to never predict it initially. We addressed this using weighted cross-entropy loss, which brought maybe recall up to 0.53. Training was done on Kaggle GPU T4 x2 with a learning rate of 2e-5, warmup ratio of 0.1, weight decay of 0.01, and 5 epochs with early stopping. The three models were evaluated offline against the same question sets, with results imported into the platform for comparison.  
    The multi-model role ablations are covered separately by other team members.  
      
 4. **Platform Walkthrough**  
@@ -24,8 +24,8 @@
    	Beyond prompt design, we investigated whether using different models in different debate roles could improve performance. In our multi-model ablation, we systematically swapped in Qwen-32B and Llama-8B across the Generator, Skeptic, and Judge positions, holding the prompt constant at v2\_structured.  
    On MedQA, the results were striking. The best configuration — Qwen as Generator, Llama-70B as Skeptic and Judge — reached 88% accuracy, up from the 77% all-70B baseline. This suggests that starting the debate with a different model's knowledge base creates more productive disagreement for the judge to resolve. However, on PubMedQA, all cross-model configurations underperformed the baseline — mixing models here hurt calibration on the ambiguous yes/no/maybe task.  
    We also implemented two novel debate strategies inspired by published work. First, v5 Counter-Argument — based on adversarial sequential debate — forces the skeptic to build the strongest possible case for a specific alternative, rather than merely finding flaws. This gave a modest \+5pp on PubMedQA.  
-   Second, and most significantly, v6 Angel-Devil Debate — inspired by Du et al.'s Multiagent Debate paper — runs two independent advocates in parallel: an Angel arguing affirmatively and a Devil challenging every assumption, with neither seeing the other's reasoning. A structured judge then arbitrates using an explicit evidence-quality rubric. On PubMedQA, this jumped from 44% to 67% accuracy — a 23-percentage-point gain — our strongest single result. The independent parallel structure prevents anchoring bias from the generator's initial answer. However, on MedQA, it collapsed to 44% because the Angel's built-in bias toward affirmative answers is misaligned with multiple-choice questions that lack an inherent 'positive' option.  
-   Comparing across all systems, the v6 Angel-Devil debate at 67% on PubMedQA comfortably exceeds the PubMedBERT fine-tuned baseline of 40%, demonstrating that a well-structured prompting approach can outperform a model trained specifically on the task. However, PubMedBERT's maybe recall of 0.53 remains competitive with several debate configurations, highlighting that uncertainty detection still benefits from task-specific training.
+   Second, and most significantly, v5 Angel-Devil Debate — inspired by Du et al.'s Multiagent Debate paper — runs two independent advocates in parallel: an Angel arguing affirmatively and a Devil challenging every assumption, with neither seeing the other's reasoning. A structured judge then arbitrates using an explicit evidence-quality rubric. On PubMedQA, this jumped from 44% to 67% accuracy — a 23-percentage-point gain — our strongest single result. The independent parallel structure prevents anchoring bias from the generator's initial answer. However, on MedQA, it collapsed to 44% because the Angel's built-in bias toward affirmative answers is misaligned with multiple-choice questions that lack an inherent 'positive' option.  
+   Comparing across all systems, the v5 Angel-Devil debate at 67% on PubMedQA comfortably exceeds the PubMedBERT fine-tuned baseline of 40%, demonstrating that a well-structured prompting approach can outperform a model trained specifically on the task. However, PubMedBERT's maybe recall of 0.53 remains competitive with several debate configurations, highlighting that uncertainty detection still benefits from task-specific training.
 
 6. **Conclusion \+ Limitations**  
    Our results show that multi-agent debate, using only prompting and no task-specific training, can outperform a fine-tuned PubMedBERT model on overall accuracy — particularly with the Angel-Devil configuration which reached 67% on PubMedQA compared to PubMedBERT's 40%. However, PubMedBERT's maybe recall of 0.53 remained competitive, suggesting that uncertainty detection specifically still benefits from training on labeled ambiguous cases. A key limitation of the fine-tuned baseline is the small PubMedQA training set of only 900 examples — with more data, a fine-tuned model could potentially close the gap.  
@@ -62,7 +62,7 @@
 * Multi-model variant: different models per stage  
 * PubMedBERT classifier — bypasses debate pipeline, direct inference  
 * Alternate Architecture: Angel, Devil → Judge diagram  
-* Prompt versions table: v1\_baseline, v1\_cot, v2\_structured, v3\_skeptic\_strict, v5\_counter\_argument, v6\_angel\_devil
+* Prompt versions table: v1\_baseline, v1\_cot, v2\_structured, v3\_skeptic\_strict, v5\_counter\_argument, v5\_angel\_devil
 
 **Slide 7 — Approach: Baselines** 
 
@@ -73,7 +73,7 @@
 * **Debate variants** — v1, v2, v3 prompts (establishes debate structure helps)  
 * **Scale variants** — 70B vs 8B (establishes model size effect)  
 * **Multi-model variants** — \`llama-3.3-70b-versatile\`, \`llama-3.1-8b-instant\`, \`qwen/qwen3-32b\`, and \`meta-llama/llama-4-scout-17b-16e-instruct\`. Swarangi's work  
-* **Independent debate variant** — v6 prompt (alternate debate structure)
+* **Independent debate variant** — v5 prompt (alternate debate structure)
 
 **Slide 8 — Evaluation Metrics**
 
@@ -85,11 +85,11 @@ Primary Metrics:
 
   \- Handles class imbalance by treating all classes equally
 
-  \- Dataset means: MedQA 0.680, MMLU 0.750, PubMedQA 0.385
+  \- Dataset means: MedQA 0.680, MMLU 0.750, PubMedQA 0.393
 
 • Maybe Recall: Recall specifically for "maybe" class in PubMedQA
 
-  \- Mean: 0.562 across 24 PubMedQA experiments
+  \- Mean: 0.557 across 23 PubMedQA experiments
 
   \- Critical for detecting clinically ambiguous cases
 
@@ -126,7 +126,7 @@ Single agent v1 (direct)     | 70%          | 78%       | 88%      | 0.75     | 
 
 Single agent v1 \+ CoT        | 71%          | 79%       | 90%      | 0.74     | 0.00
 
-Multi-agent v2 (structured)  | 56%          | 77%       | 94%      | 0.68     | 0.73
+Multi-agent v2 (structured)  | 44%          | 77%       | 94%      | 0.72     | 0.93
 
 Multi-agent v3 (strict)      | 21%          | 30%       | 38%      | 0.36     | 0.92
 
@@ -148,15 +148,15 @@ Key Observations:
 
 • F1 Macro shows debate helps on MCQ but hurts on PubMedQA's ambiguous task
 
-• Maybe Recall varies dramatically: v2=73%, v1\_cot=0%, v5=7%, showing different calibration strategies
+• Maybe Recall varies dramatically: v2=93%, v1\_cot=0%, v5=7%, showing different calibration strategies
 
 • v5\_counter\_argument shows modest PubMedQA gain (49%) with 61% on MedQA
 
-• All configurations beat PubMedBERT on accuracy, but fine-tuned baseline remains competitive on maybe recall (0.53)
+• Most LLM configs beat PubMedBERT on accuracy — exceptions: v3_skeptic_strict (21% PubMedQA, 30% MedQA) and most v2_structured heterogeneous PubMedQA runs (21–44%) fall below the 40% baseline; PubMedBERT maybe recall (0.53) remains competitive
 
 **Script :** "Looking at our results, we see stark dataset-dependent performance. Our baseline v1 direct prompting achieved 70% on PubMedQA and 88% on MMLU. Adding chain-of-thought improved MCQ accuracy to 90% but eliminated maybe predictions entirely—revealing how explicit reasoning can override natural uncertainty.
 
-V2\_structured achieved our best MCQ results: 94% on MMLU with near-perfect F1. On PubMedQA, despite dropping to 56% accuracy, it achieved 73% maybe recall—the system correctly identified ambiguous cases at the cost of overall accuracy.
+V2\_structured achieved our best MCQ results: 94% on MMLU with near-perfect F1. On PubMedQA, despite dropping to 44% accuracy, it achieved 93% maybe recall—the system correctly identified ambiguous cases at the cost of overall accuracy.
 
 Then v3\_skeptic\_strict catastrophically failed with only 21% accuracy on PubMedQA and F1 of 0.36. It achieved 92% maybe recall by defaulting to 'maybe' for nearly everything—the skeptic was too aggressive.
 
@@ -238,7 +238,7 @@ PubMedQA (Yes/No/Maybe):
 
 • Challenge: 3-class imbalanced task (\~15% maybe class)
 
-• v2\_structured: 56% accuracy, 73% maybe recall → over-predicts ambiguity
+• v2\_structured: 44% accuracy, 93% maybe recall → over-predicts ambiguity
 
 • v3\_skeptic\_strict: 21% accuracy, 92% maybe recall → says "maybe" to nearly everything
 
@@ -288,7 +288,7 @@ Example Debate Patterns:
 
 **Script:** "Our statistical analysis confirms these effects are real—23 out of 35 experiments showed p \< 0.001 with McNemar's test, highly significant and not due to chance.
 
-Breaking down by dataset, task structure dictates debate behavior. On PubMedQA, v2\_structured achieved 73% maybe recall but dropped to 56% accuracy by over-predicting uncertainty. V3\_skeptic\_strict achieved 92% maybe recall by defaulting to 'maybe' for nearly everything—collapsing accuracy to 21%. This is catastrophic over-skepticism: the judge loses confidence even with clear evidence.
+Breaking down by dataset, task structure dictates debate behavior. On PubMedQA, v2\_structured achieved 93% maybe recall but dropped to 44% accuracy by over-predicting uncertainty. V3\_skeptic\_strict achieved 92% maybe recall by defaulting to 'maybe' for nearly everything—collapsing accuracy to 21%. This is catastrophic over-skepticism: the judge loses confidence even with clear evidence.
 
 V5\_angel\_devil offers recovery: parallel advocacy instead of sequential critique reached 67% accuracy, avoiding v3's failure but dropping maybe recall to 7%—the opposite extreme.
 
