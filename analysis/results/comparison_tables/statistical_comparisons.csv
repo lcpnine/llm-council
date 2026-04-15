@@ -1,0 +1,8 @@
+Dataset,Prompt,Model,Baseline_Accuracy,Debate_Accuracy,Delta,p-value,Cohens_d,Effect_Size,Net_Impact
+PUBMEDQA,v1_baseline,llama-3.3-70b-versatile,70.0%,70.0%,+2.5%,0.0442*,0.0539556127885026,negligible,-2 (HURT)
+PUBMEDQA,v2_structured,llama-3.3-70b-versatile,68.0%,44.0%,-23.5%,< 0.001***,-0.4869616640797213,small,-14 (HURT)
+PUBMEDQA,v2_structured,llama-3.3-70b-versatile,68.0%,68.0%,+0.0%,0.6625,0.0,negligible,+3 (HELPED)
+PUBMEDQA,v2_structured,llama-3.3-70b-versatile,68.0%,31.0%,-37.0%,< 0.001***,-0.7965743573807885,medium,-34 (HURT)
+PUBMEDQA,v2_structured,llama-3.3-70b-versatile,68.0%,24.0%,-44.0%,< 0.001***,-0.9838699100999072,large,-41 (HURT)
+PUBMEDQA,v2_structured,llama-3.3-70b-versatile,68.0%,34.0%,-34.0%,< 0.001***,-0.723240570679579,medium,-31 (HURT)
+PUBMEDQA,v2_structured,llama-3.3-70b-versatile,68.0%,44.0%,-24.0%,0.0023**,-0.4982728791224396,small,-21 (HURT)
