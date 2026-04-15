@@ -391,20 +391,4 @@ Debate effects are real and statistically robust where significant — not due t
 
 **Future work:** Larger models · Human evaluation · More medical datasets · Calibration-aware prompting
 
----
-
-<!-- Slide 13: Team Contributions -->
-
-# Team Contributions
-
-| Team Member | Contribution |
-|-------------|-------------|
-| **Yu Taek Lee** | Full-stack research platform — FastAPI backend, React frontend, SQLite experiment tracking, batch experiment system, debate log visualization |
-| **Amruta** | PubMedBERT fine-tuning — 3 dataset-specific models (SequenceClassification + MultipleChoice heads), weighted cross-entropy loss for maybe class imbalance |
-| **Rashmi** | Evaluation framework — statistical significance tests (McNemar's), calibration analysis, maybe recall tracking, per-class metrics |
-| **Swarangi** | Multi-model role ablations — heterogeneous debate configurations (Qwen-32B, Llama-70B, Llama-8B across Generator/Skeptic/Judge roles) |
-| **Ananya** | Paper writing — introduction, related work, methods, results, conclusion |
-
----
-
 *AI6127 Deep Neural Networks for NLP — Final Project*
