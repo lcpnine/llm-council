@@ -42,7 +42,7 @@ style: |
 | Amruta | PubMedBERT fine-tuning (3 dataset-specific models, weighted loss) |
 | Rashmi | Evaluation framework, statistical significance analysis |
 | Swarangi | Multi-model role ablations (heterogeneous debate configurations) |
-| Ananya | Paper writing and report |
+| Ananya | Literature Review and heterogeneous debate configuration |
 
 ---
 
@@ -59,7 +59,7 @@ style: |
 - Skeptic challenges it with statistical and logical critique
 - Judge synthesizes the debate into a final decision
 
-**Key finding:** The v5 Angel-Devil configuration reached **67% accuracy on PubMedQA**, comfortably exceeding the fine-tuned **PubMedBERT baseline of 40%** — using only prompting, no task-specific training.
+**Key finding:** The v6 Angel-Devil configuration reached **67% accuracy on PubMedQA**, comfortably exceeding the fine-tuned **PubMedBERT baseline of 40%** — using only prompting, no task-specific training.
 
 ---
 
@@ -136,7 +136,7 @@ Question → [Generator] → Answer
 </div>
 <div>
 
-**v5 Angel-Devil Variant**
+**v6 Angel-Devil Variant**
 ```
 Question ──→ [Angel]  ─┐
                         ├→ [Judge] → Answer
@@ -162,7 +162,7 @@ Question ──→ [Devil]  ─┘
 | `qwen/qwen3-32b` | 32B |
 | `meta-llama/llama-4-scout-17b-16e-instruct` | 17B |
 
-**Prompt versions:** v1_baseline · v1_cot · v2_structured · v3_skeptic_strict · v5_counter_argument · v5_angel_devil
+**Prompt versions:** v1_baseline · v1_cot · v2_structured · v3_skeptic_strict · v5_counter_argument · v6_angel_devil
 
 ---
 
@@ -192,7 +192,7 @@ Question ──→ [Devil]  ─┘
 | v2_structured | 3 | Evidence scaffold + systematic critique checklist |
 | v3_skeptic_strict | 3 | Tightened Skeptic on p-values, confounders, generalizability |
 | v5_counter_argument | 3 | Skeptic argues for a specific alternative answer |
-| v5_angel_devil | 3 | Angel/Devil in parallel; Judge arbitrates |
+| v6_angel_devil | 3 | Angel/Devil in parallel; Judge arbitrates |
 
 **Scale ablation:** 70B vs 8B models across same prompts
 
@@ -276,8 +276,8 @@ Built to support reproducible experimentation across the full team.
 | Multi-agent v2 (structured) | 44% | 77% | **94%** | 0.72 | 0.93 |
 | Multi-agent v3 (strict) | 21%‡ | 30%‡ | 38%‡ | 0.36 | **0.92** |
 | v5 counter-argument | 49% | 61% | — | 0.49 | 0.07 |
-| **v5_angel_devil** | **67%** | 44% | — | 0.55 | 0.07 |
-| v5_angel_devil (hetero) | — | **59%** | — | 0.70 | — |
+| **v6_angel_devil** | **67%** | 44% | — | 0.55 | 0.07 |
+| v6_angel_devil (hetero) | — | **59%** | — | 0.70 | — |
 
 ‡ Average across model configurations (not a single experiment result)
 
@@ -286,8 +286,8 @@ Built to support reproducible experimentation across the full team.
 **Key observations:**
 - **v2_structured** achieves best MCQ accuracy (94% MMLU) — debate helps on knowledge tasks
 - **v3_skeptic_strict** catastrophically fails (F1=0.36) — over-skepticism destroys correct answers
-- **v5_angel_devil** recovers PubMedQA (67%) but collapses on MedQA (44%) — Angel's affirmative bias misaligns with MCQ
-- **v5_angel_devil hetero** (Qwen+70B) recovers MedQA to 59% with F1=0.70
+- **v6_angel_devil** recovers PubMedQA (67%) but collapses on MedQA (44%) — Angel's affirmative bias misaligns with MCQ
+- **v6_angel_devil hetero** (Qwen+70B) recovers MedQA to 59% with F1=0.70
 - Most LLM configs outperform PubMedBERT on their respective datasets — **exceptions: v3_skeptic_strict** (avg 21% vs 40% on PubMedQA; avg 30% vs 34% on MedQA) **and v2_structured heterogeneous runs** (individual PubMedQA results ranging 21–44%, with most below PubMedBERT's 40%) also fall below baseline; PubMedBERT's maybe recall (0.53) remains competitive
 
 ---
@@ -296,7 +296,7 @@ Built to support reproducible experimentation across the full team.
 
 # Ablation Study: Agent Attribution Analysis
 
-**Setup:** For standard Generator→Skeptic→Judge experiments, compare Generator's initial answer vs. final answer. For v5_angel_devil (no generator stage), compared against single-agent baseline. Count: Fixed by debate / Broke by debate / Net impact.
+**Setup:** For standard Generator→Skeptic→Judge experiments, compare Generator's initial answer vs. final answer. For 6_angel_devil (no generator stage), compared against single-agent baseline. Count: Fixed by debate / Broke by debate / Net impact.
 
 **35 three-stage experiments analyzed**
 
@@ -306,7 +306,7 @@ Built to support reproducible experimentation across the full team.
 | — debate (homogeneous) | 126 | 40 | <span class="green">+86</span> |
 | — heterogeneous | 333 | 444 | −111 |
 | v3_skeptic_strict | 92 | 324 | <span class="red">−232</span> |
-| v5_angel_devil | 60 | 55 | <span class="green">+5</span> |
+| v6_angel_devil | 60 | 55 | <span class="green">+5</span> |
 | v5_counter_argument | 41 | 46 | −5 |
 
 ---
@@ -350,7 +350,7 @@ Debate effects are real and statistically robust where significant — not due t
 |---------|--------|:--------:|:------------:|---------|
 | PubMedQA | v2_structured | 44% | 0.93 | Over-predicts ambiguity |
 | PubMedQA | v3_skeptic_strict | 21% | **0.92** | Says "maybe" to everything |
-| PubMedQA | v5_angel_devil | **67%** | 0.07 | Recovers accuracy, drops recall |
+| PubMedQA | v6_angel_devil | **67%** | 0.07 | Recovers accuracy, drops recall |
 | MedQA | v2 hetero (Qwen+70B) | **88%** | — | Best MCQ result |
 | MMLU | v2_structured | **94%** | — | Debate working perfectly |
 
@@ -372,7 +372,7 @@ Debate effects are real and statistically robust where significant — not due t
 
 <div class="box">
 
-**Yes — on accuracy.** v5 Angel-Devil reached **67% on PubMedQA** vs. PubMedBERT's **40%**, using only prompting and no task-specific training.
+**Yes — on accuracy.** v6 Angel-Devil reached **67% on PubMedQA** vs. PubMedBERT's **40%**, using only prompting and no task-specific training.
 
 **Not entirely.** PubMedBERT's **maybe recall of 0.53** remains competitive with several debate configurations — uncertainty detection specifically still benefits from labeled training data.
 
@@ -387,7 +387,7 @@ Debate effects are real and statistically robust where significant — not due t
 **Limitations:**
 - PubMedQA fine-tuning used only **~900 training examples** — more data could close the gap
 - Groq free-tier rate limits required deliberate pacing: **0.5s between debate stages**, **0.3s between questions**
-- v5_angel_devil fails on MedQA (44%) — Angel's affirmative bias misaligns with 4-option MCQ
+- v6_angel_devil fails on MedQA (44%) — Angel's affirmative bias misaligns with 4-option MCQ
 
 **Future work:** Larger models · Human evaluation · More medical datasets · Calibration-aware prompting
 
