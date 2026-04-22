@@ -85,7 +85,7 @@ We evaluated a multi-agent debate system (Generator → Skeptic → Judge) acros
 
 ### Data Quality Control
 - **Total experiments:** 47 complete experiments with verified per-question predictions
-- **Coverage:** Baselines, homogeneous debate, heterogeneous multi-model, and v5 variants
+- **Coverage:** Baselines, homogeneous debate, heterogeneous multi-model, and v6_angel_devil variants
 - **Quality assurance:** All experiments include F1_Macro, per-class metrics, and agent attribution
 - **Dataset:** 2,000+ predictions across three medical QA benchmarks
 
